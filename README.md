@@ -1,4 +1,4 @@
-# TriageReady
+# <img src="src/assets/logo.png" width="40" height="40" align="center" alt="TriageReady Logo" /> TriageReady
 
 TriageReady is a modern, client-side web application designed to help developers, QA engineers, and product managers streamline and standardize the bug triaging process. It takes raw, unstructured bug reports and analyzes them against a comprehensive 9-criterion QA rubric using the Google Gemini 3.1 Flash Lite API.
 
@@ -15,7 +15,7 @@ TriageReady is a modern, client-side web application designed to help developers
 ## Stack
 
 - **Framework**: Vite + React + TypeScript
-- **UI/Styles**: Tailwind CSS v4 + Radix UI Primitives + Lucide Icons
+- **UI/Styles**: Tailwind CSS v4 + Lucide Icons
 - **AI Engine**: Gemini 3.1 Flash Lite API (`gemini-3.1-flash-lite`)
 - **Data Flow**: Pure client-side storage (localStorage) for API keys; zero remote data storage to protect key credentials.
 

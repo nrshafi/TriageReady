@@ -8,7 +8,6 @@ import {
   Loader2,
   ChevronUp,
   ChevronDown,
-  CheckCircle2,
   Zap,
   FlaskConical,
   FileText,
@@ -164,6 +163,46 @@ function renderInline(text: string): ReactNode[] {
   }
 
   return parts;
+}
+
+// ─── Logo Component ──────────────────────────────────────────────────────────
+
+function Logo({ className = "w-8 h-8" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      className={className}
+    >
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#4493f8" />
+          <stop offset="50%" stop-color="#06b6d4" />
+          <stop offset="100%" stop-color="#3fb950" />
+        </linearGradient>
+        <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#3fb950" flood-opacity="0.6"/>
+        </filter>
+        <filter id="logoBlueGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#4493f8" flood-opacity="0.4"/>
+        </filter>
+      </defs>
+
+      {/* Outer target circle segment */}
+      <circle cx="50" cy="50" r="44" fill="none" stroke="url(#logoGrad)" strokeWidth="4.5" strokeDasharray="18 14" strokeLinecap="round" opacity="0.8" />
+
+      {/* Inner target circle */}
+      <circle cx="50" cy="50" r="30" fill="none" stroke="#30363d" strokeWidth="4" />
+      <circle cx="50" cy="50" r="30" fill="none" stroke="url(#logoGrad)" strokeWidth="4" strokeDasharray="70 90" strokeLinecap="round" />
+
+      {/* Stylized T-Checkmark combo */}
+      <g transform="translate(0, 1)">
+        <rect x="24" y="28" width="52" height="6" rx="3" fill="#e6edf3" filter="url(#logoBlueGlow)" />
+        <path d="M50 28 V 56" stroke="#e6edf3" strokeWidth="6.5" strokeLinecap="round" />
+        <path d="M38 52 L 49.5 63.5 L 74 31" fill="none" stroke="#3fb950" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" filter="url(#logoGlow)" />
+      </g>
+    </svg>
+  );
 }
 
 // ─── Radial Gauge ─────────────────────────────────────────────────────────────
@@ -531,9 +570,7 @@ export default function App() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded bg-[#4493f8] flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
-            </div>
+            <Logo className="w-8 h-8 shrink-0" />
             <span className="font-semibold text-sm text-foreground tracking-tight">TriageReady</span>
             <span className="hidden sm:block text-[11px] text-muted-foreground border-l border-border pl-3 ml-1">
               From rant to triage-ready in one click.
@@ -578,8 +615,8 @@ export default function App() {
           <div className="min-h-[80vh] flex items-center justify-center">
             <div className="w-full max-w-md">
               <div className="mb-8 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#4493f8]/10 border border-[#4493f8]/20 mb-4">
-                  <Key className="w-5 h-5 text-[#4493f8]" />
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-secondary border border-border/80 mb-4 shadow-inner">
+                  <Logo className="w-14 h-14 animate-[pulse_3s_infinite_ease-in-out]" />
                 </div>
                 <h1 className="text-xl font-semibold text-foreground mb-2">Connect your Gemini key</h1>
                 <p className="text-sm text-muted-foreground">

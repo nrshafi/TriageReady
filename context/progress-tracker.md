@@ -18,6 +18,7 @@
 - **Export Utilities**: Designed custom export bridges, allowing users to copy standardized reports in both standard Markdown and Jira formats, and to download local `.md` files.
 - **Demo Simulation Mode**: Programmed offline mock data integration for all three quick-sample templates.
 - **GitHub Pages Deployment**: Added Vite base path `/TriageReady/` configuration and created automated deployment workflow using GitHub Actions.
+- **Visual Branding & Identity**: Generated and integrated a custom high-fidelity geometric logo (T and checkmark target theme) as an inline SVG component, standalone browser favicon, and PNG asset. Optimized stroke weight and size parameters for clear, bold visibility (w-8 in header, w-14 in Setup view).
 - **Dependency & Size Optimization**: Cleaned up package.json dependencies, removing 197 unused packages (e.g. Radix UI, MUI, Recharts, Framer Motion) and deleted the unused `src/app/components/` directory, reducing package size and compiling with a clean 228KB build.
 
 ## In Progress

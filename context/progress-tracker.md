@@ -22,7 +22,8 @@
 - **Dependency & Size Optimization**: Cleaned up package.json dependencies, removing 197 unused packages (e.g. Radix UI, MUI, Recharts, Framer Motion) and deleted the unused `src/app/components/` directory, reducing package size and compiling with a clean 228KB build.
 - **Restructured Layout & Whitespace**: Converted the narrow 896px single-column layout into a spacious 1280px desktop dashboard layout. Reorganized the Input screen into a 2-column view (sidebar with rubric guide & sample picker; right side with textarea) and the Results screen into a 2-column top grid (metrics stack left, category details right) and a spacious full-width comparison view at the bottom. This utilizes desktop whitespace effectively and improves UX.
 - **Code Standards Compliance**: Refactored components (`Logo`, `RadialGauge`, `CategoryBar`, `Toaster`, code block elements, tooltips) to retrieve all colors and glow effects from CSS variables inside `theme.css`, eliminating hardcoded hex values. Implemented robust runtime schema validation at the Gemini API integration boundary (`api.ts`) to verify incoming payloads before trusting them in components.
-- **Biome Integration**: Added `@biomejs/biome` as development dependency and set up code style formatting (spaces, width 2, double quotes) and linting in `biome.json` and `package.json` scripts.
+- **Biome Integration**: Added `@biomejs/biome` as development dependency and set up code style formatting (spaces, width 2, double quotes) and linter configurations.
+- **API Key Verification**: Implemented lightweight client-side verification query against the Gemini model on key save and application load. Handled background checks, error notifications, visual input feedback, and custom status indicators in the application header.
 
 ## In Progress
 
@@ -58,6 +59,7 @@
 - Resolved visual wrapping and alignment issues in the Evaluation Rubric sidebar card. Converted the layout from monospace to standard sans-serif (`font-sans`), increased column spacing (`gap-x-4`), and applied `whitespace-nowrap` to prevent list items (e.g., "Expected behavior (10%)" and "Severity/Priority (10%)") from wrapping. Checked and formatted using Biome and compiled successfully.
 - Removed redundant logo header element (`Logo`, `TriageReady Grader`, `QA Assistant`) from the sidebar card in `src/app/App.tsx` as it is already present in the global sticky navigation header.
 - Increased the font size of the application slogan in the navigation header from `11px` to `12px` (`text-xs`) and set `font-medium` with increased contrast (`text-muted-foreground/95`) to eliminate microscopic text and prevent blurriness/lack of sharpness. Run lint check and compiled successfully.
+- Added API Key Check Feature. Implemented `checkApiKey` in `src/app/api.ts` to perform a lightweight validation query to Google Generative Language endpoints. Refactored `App.tsx` to handle key checks asynchronously on mount and save actions, disabled inputs during validation loading, exposed clear red error indicators for verification failures, and updated the header with dynamic status badges (checking, valid, invalid, unchecked/offline). Verified with Biome check and production build checks.
 
 
 

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
-import { analyzeReport } from "./api";
+import { analyzeReport, checkApiKey } from "./api";
 import {
   CRITERIA,
   DEMO_RESPONSES,
@@ -521,6 +521,7 @@ async function copyText(text: string): Promise<boolean> {
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
 type AppState = "setup" | "input" | "loading" | "results";
+type KeyStatus = "unchecked" | "checking" | "valid" | "invalid";
 
 export default function App() {
   const [appState, setAppState] = useState<AppState>("setup");
@@ -535,30 +536,84 @@ export default function App() {
   const [copyingMd, setCopyingMd] = useState(false);
   const [copyingJira, setCopyingJira] = useState(false);
 
+  const [keyStatus, setKeyStatus] = useState<KeyStatus>("unchecked");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [isCheckingKey, setIsCheckingKey] = useState(false);
+
   // Load saved key on mount
   useEffect(() => {
     const saved = localStorage.getItem("triageready_apikey");
     if (saved) {
-      setApiKey(saved);
+      const trimmed = saved.trim();
+      setApiKey(trimmed);
       setAppState("input");
+
+      // Run background verification
+      setKeyStatus("checking");
+      checkApiKey(trimmed)
+        .then(() => {
+          setKeyStatus("valid");
+        })
+        .catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : "";
+          const isNetworkErr =
+            !navigator.onLine ||
+            msg.toLowerCase().includes("fetch") ||
+            msg.toLowerCase().includes("network") ||
+            msg.toLowerCase().includes("cors");
+
+          if (isNetworkErr) {
+            setKeyStatus("unchecked");
+            toast.info(
+              "Saved API key is unchecked (offline or network issue).",
+            );
+          } else {
+            setKeyStatus("invalid");
+            setValidationError(msg || "Invalid API key");
+            toast.error(
+              `Saved API key is invalid: ${msg || "API verification failed"}`,
+            );
+          }
+        });
     }
   }, []);
 
-  const handleSaveAndContinue = useCallback(() => {
-    if (!apiKey.trim()) {
+  const handleSaveAndContinue = useCallback(async () => {
+    const trimmed = apiKey.trim();
+    if (!trimmed) {
       toast.error("Please enter your Gemini API key.");
       return;
     }
-    if (rememberKey) {
-      localStorage.setItem("triageready_apikey", apiKey.trim());
+
+    setIsCheckingKey(true);
+    setValidationError(null);
+    setKeyStatus("checking");
+
+    try {
+      await checkApiKey(trimmed);
+      setKeyStatus("valid");
+      if (rememberKey) {
+        localStorage.setItem("triageready_apikey", trimmed);
+      }
+      setDemoMode(false);
+      toast.success("API key verified successfully!");
+      setAppState("input");
+    } catch (err: unknown) {
+      setKeyStatus("invalid");
+      const msg =
+        err instanceof Error ? err.message : "Unknown verification error";
+      setValidationError(msg);
+      toast.error(`API key verification failed: ${msg}`);
+    } finally {
+      setIsCheckingKey(false);
     }
-    setDemoMode(false);
-    setAppState("input");
   }, [apiKey, rememberKey]);
 
   const handleDemoMode = useCallback(() => {
     setDemoMode(true);
     setApiKey("");
+    setKeyStatus("unchecked");
+    setValidationError(null);
     setAppState("input");
   }, []);
 
@@ -618,6 +673,8 @@ export default function App() {
     setDemoMode(false);
     setResult(null);
     setScore(0);
+    setKeyStatus("unchecked");
+    setValidationError(null);
     setAppState("setup");
   }, []);
 
@@ -709,9 +766,40 @@ export default function App() {
                     <FlaskConical className="w-3 h-3" /> demo mode
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1.5 text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-1 rounded">
-                    <Key className="w-3 h-3" /> key connected
-                  </span>
+                  <>
+                    {keyStatus === "checking" && (
+                      <span className="flex items-center gap-1.5 text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-1 rounded">
+                        <Loader2 className="w-3 h-3 animate-spin" /> verifying
+                        key...
+                      </span>
+                    )}
+                    {keyStatus === "valid" && (
+                      <span className="flex items-center gap-1.5 text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-1 rounded">
+                        <Key className="w-3 h-3" /> key connected
+                      </span>
+                    )}
+                    {keyStatus === "invalid" && (
+                      <span
+                        className="flex items-center gap-1.5 text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-1 rounded cursor-pointer"
+                        title={validationError || "API Key invalid"}
+                        onClick={() => {
+                          setAppState("setup");
+                        }}
+                      >
+                        <AlertTriangle className="w-3 h-3 animate-pulse" /> key
+                        invalid
+                      </span>
+                    )}
+                    {keyStatus === "unchecked" && (
+                      <span
+                        className="flex items-center gap-1.5 text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 rounded cursor-pointer"
+                        title="Could not verify key connection (offline or connection error)"
+                      >
+                        <AlertTriangle className="w-3 h-3" /> key unchecked
+                        (offline)
+                      </span>
+                    )}
+                  </>
                 )}
                 {appState === "results" && (
                   <button
@@ -760,23 +848,30 @@ export default function App() {
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     onKeyDown={(e) =>
-                      e.key === "Enter" && handleSaveAndContinue()
+                      e.key === "Enter" &&
+                      !isCheckingKey &&
+                      handleSaveAndContinue()
                     }
                     placeholder="AIza..."
-                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors"
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     autoComplete="off"
                     spellCheck={false}
+                    disabled={isCheckingKey}
                   />
                 </div>
 
-                <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <label
+                  className={`flex items-center gap-2.5 select-none ${isCheckingKey ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                >
                   <div
-                    onClick={() => setRememberKey(!rememberKey)}
+                    onClick={() =>
+                      !isCheckingKey && setRememberKey(!rememberKey)
+                    }
                     className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer ${
                       rememberKey
                         ? "bg-[#4493f8] border-[#4493f8]"
                         : "bg-transparent border-border"
-                    }`}
+                    } ${isCheckingKey ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     {rememberKey && (
                       <svg
@@ -799,16 +894,34 @@ export default function App() {
                   </span>
                 </label>
 
+                {validationError && (
+                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 text-xs text-destructive flex items-start gap-2">
+                    <AlertTriangle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-destructive" />
+                    <span className="leading-relaxed">
+                      <strong>Verification failed:</strong> {validationError}
+                    </span>
+                  </div>
+                )}
+
                 <div className="pt-1 flex flex-col gap-2">
                   <button
                     onClick={handleSaveAndContinue}
-                    className="w-full bg-[#4493f8] hover:bg-[#3b82f6] text-white font-medium text-sm py-2.5 rounded-lg transition-colors"
+                    disabled={isCheckingKey}
+                    className="w-full bg-[#4493f8] hover:bg-[#3b82f6] disabled:bg-[#4493f8]/60 disabled:cursor-not-allowed text-white font-medium text-sm py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    Save & continue
+                    {isCheckingKey ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Verifying key...
+                      </>
+                    ) : (
+                      "Save & continue"
+                    )}
                   </button>
                   <button
                     onClick={handleDemoMode}
-                    className="w-full bg-transparent hover:bg-secondary text-muted-foreground hover:text-foreground font-medium text-sm py-2.5 rounded-lg border border-border transition-colors flex items-center justify-center gap-2"
+                    disabled={isCheckingKey}
+                    className="w-full bg-transparent hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground hover:text-foreground font-medium text-sm py-2.5 rounded-lg border border-border transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <FlaskConical className="w-4 h-4" /> Try demo mode
                   </button>

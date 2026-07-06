@@ -183,3 +183,27 @@ export async function analyzeReport(
   const parsed = JSON.parse(text);
   return validateGeminiResult(parsed);
 }
+
+export async function checkApiKey(apiKey: string): Promise<boolean> {
+  const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: "Hello" }] }],
+      generationConfig: {
+        maxOutputTokens: 1,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    let message = `API error ${response.status}`;
+    try {
+      const err = await response.json();
+      message = err?.error?.message || message;
+    } catch {}
+    throw new Error(message);
+  }
+
+  return true;
+}

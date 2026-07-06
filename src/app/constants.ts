@@ -147,15 +147,60 @@ The upload dialog closes without any feedback. No success toast, no error messag
 export const DEMO_RESPONSES: Record<string, GeminiResult> = {
   terrible: {
     criteria: [
-      { id: "title", score: 1, evidence: '"the save button doesnt work!!!"', fix: 'Rewrite as: "[PageName] Save button non-responsive when [specific condition on specific component]". Include the feature name and symptom.' },
-      { id: "steps_to_reproduce", score: 0, evidence: "Not present", fix: "Add numbered steps starting from a known state: 1. Navigate to [page]. 2. Fill in [form fields]. 3. Click Save. 4. Observe that nothing happens." },
-      { id: "expected_result", score: 0, evidence: "Not present", fix: 'Add: "Expected: Changes are saved successfully and a confirmation message appears."' },
-      { id: "actual_result", score: 1, evidence: '"nothing happens when i click it"', fix: "Specify exact behavior: Does the button animate on click? Is there a spinner? Does the network tab show a failed request? Check browser console for errors." },
-      { id: "environment", score: 0, evidence: "Not present", fix: "Add OS + version, browser + version, application version/build number, and device type." },
-      { id: "severity_priority", score: 1, evidence: '"very urgent"', fix: 'State formal severity (Critical/High/Medium/Low) and priority (P1–P4) with rationale based on user impact and business scope.' },
-      { id: "reproducibility", score: 0, evidence: "Not present", fix: "State reproducibility rate: Always, Intermittent (~X% of attempts), Rarely, or Once." },
-      { id: "evidence", score: 0, evidence: "Not present", fix: "Attach a screenshot showing the non-responsive button state and the browser console open, showing any errors." },
-      { id: "clarity_scope", score: 2, evidence: '"also the colors look weird sometimes"', fix: 'File a separate bug for the color issue. Remove emotional language ("!!!","completely broken"). One issue per report.' },
+      {
+        id: "title",
+        score: 1,
+        evidence: '"the save button doesnt work!!!"',
+        fix: 'Rewrite as: "[PageName] Save button non-responsive when [specific condition on specific component]". Include the feature name and symptom.',
+      },
+      {
+        id: "steps_to_reproduce",
+        score: 0,
+        evidence: "Not present",
+        fix: "Add numbered steps starting from a known state: 1. Navigate to [page]. 2. Fill in [form fields]. 3. Click Save. 4. Observe that nothing happens.",
+      },
+      {
+        id: "expected_result",
+        score: 0,
+        evidence: "Not present",
+        fix: 'Add: "Expected: Changes are saved successfully and a confirmation message appears."',
+      },
+      {
+        id: "actual_result",
+        score: 1,
+        evidence: '"nothing happens when i click it"',
+        fix: "Specify exact behavior: Does the button animate on click? Is there a spinner? Does the network tab show a failed request? Check browser console for errors.",
+      },
+      {
+        id: "environment",
+        score: 0,
+        evidence: "Not present",
+        fix: "Add OS + version, browser + version, application version/build number, and device type.",
+      },
+      {
+        id: "severity_priority",
+        score: 1,
+        evidence: '"very urgent"',
+        fix: "State formal severity (Critical/High/Medium/Low) and priority (P1–P4) with rationale based on user impact and business scope.",
+      },
+      {
+        id: "reproducibility",
+        score: 0,
+        evidence: "Not present",
+        fix: "State reproducibility rate: Always, Intermittent (~X% of attempts), Rarely, or Once.",
+      },
+      {
+        id: "evidence",
+        score: 0,
+        evidence: "Not present",
+        fix: "Attach a screenshot showing the non-responsive button state and the browser console open, showing any errors.",
+      },
+      {
+        id: "clarity_scope",
+        score: 2,
+        evidence: '"also the colors look weird sometimes"',
+        fix: 'File a separate bug for the color issue. Remove emotional language ("!!!","completely broken"). One issue per report.',
+      },
     ],
     missing_fields: [
       "Which page or form contains the Save button",
@@ -172,7 +217,8 @@ export const DEMO_RESPONSES: Record<string, GeminiResult> = {
     severity_prediction: {
       severity: "Unknown",
       priority: "P3",
-      reasoning: "Cannot determine severity without knowing which feature is affected, user impact scope, or whether data loss occurs. Tentatively P3 pending clarification.",
+      reasoning:
+        "Cannot determine severity without knowing which feature is affected, user impact scope, or whether data loss occurs. Tentatively P3 pending clarification.",
     },
     injection_detected: false,
     rewritten_report_markdown: `## Summary
@@ -208,20 +254,67 @@ Changes are saved successfully and a confirmation message or visual feedback app
 
 ## Notes
 Reporter also mentions "colors look weird sometimes" — this should be filed as a **separate** bug report.`,
-    summary_verdict: "This report is missing nearly all information required for triage. Steps, environment, expected/actual results, and evidence are all absent. The color rendering issue should be filed separately.",
+    summary_verdict:
+      "This report is missing nearly all information required for triage. Steps, environment, expected/actual results, and evidence are all absent. The color rendering issue should be filed separately.",
   },
 
   mediocre: {
     criteria: [
-      { id: "title", score: 5, evidence: '"Bug: File upload fails on large files"', fix: 'Be more specific: "File upload fails with generic error for files >100MB — upload stops partway through on Chrome/Windows". Include the error type and size threshold.' },
-      { id: "steps_to_reproduce", score: 4, evidence: '"When I try to upload a file that is larger than about 100MB"', fix: "Add numbered steps: 1. Navigate to [upload page]. 2. Click the upload button. 3. Select a file >100MB (e.g., a 112MB .mp4). 4. Observe upload progress bar. Include exact file size and type tested." },
-      { id: "expected_result", score: 7, evidence: '"File should upload successfully"', fix: "Minor improvement: specify whether a success notification is expected and the expected completion time for context." },
-      { id: "actual_result", score: 4, evidence: '"upload stops and shows a generic error"', fix: "Quote the exact error message text. Note at what percentage the upload stops. Check the Network tab for the HTTP status code of the failed request." },
-      { id: "environment", score: 4, evidence: '"Chrome on Windows"', fix: "Add Chrome version number (chrome://version), Windows version (10/11 + build), app version/build number, and confirm desktop (not mobile)." },
-      { id: "severity_priority", score: 5, evidence: '"Severity: High"', fix: "Add priority (P1–P4) and justify severity: what percentage of users upload large files? Is this blocking a core workflow? Is there a workaround?" },
-      { id: "reproducibility", score: 5, evidence: '"This happens most of the time"', fix: 'Quantify: "Reproducible ~80% of attempts with files >100MB." Note any conditions where uploads succeed (file type, network speed, etc.).' },
-      { id: "evidence", score: 2, evidence: '"No screenshot but I can get one if needed"', fix: "Attach a screenshot of the error state and a network trace (DevTools → Network tab HAR export) showing the failed request and its status code." },
-      { id: "clarity_scope", score: 8, evidence: "Report covers a single issue with neutral tone.", fix: 'Good scope. Minor improvement: avoid approximations ("about 100MB") — use the exact tested file size (e.g., "112MB").' },
+      {
+        id: "title",
+        score: 5,
+        evidence: '"Bug: File upload fails on large files"',
+        fix: 'Be more specific: "File upload fails with generic error for files >100MB — upload stops partway through on Chrome/Windows". Include the error type and size threshold.',
+      },
+      {
+        id: "steps_to_reproduce",
+        score: 4,
+        evidence:
+          '"When I try to upload a file that is larger than about 100MB"',
+        fix: "Add numbered steps: 1. Navigate to [upload page]. 2. Click the upload button. 3. Select a file >100MB (e.g., a 112MB .mp4). 4. Observe upload progress bar. Include exact file size and type tested.",
+      },
+      {
+        id: "expected_result",
+        score: 7,
+        evidence: '"File should upload successfully"',
+        fix: "Minor improvement: specify whether a success notification is expected and the expected completion time for context.",
+      },
+      {
+        id: "actual_result",
+        score: 4,
+        evidence: '"upload stops and shows a generic error"',
+        fix: "Quote the exact error message text. Note at what percentage the upload stops. Check the Network tab for the HTTP status code of the failed request.",
+      },
+      {
+        id: "environment",
+        score: 4,
+        evidence: '"Chrome on Windows"',
+        fix: "Add Chrome version number (chrome://version), Windows version (10/11 + build), app version/build number, and confirm desktop (not mobile).",
+      },
+      {
+        id: "severity_priority",
+        score: 5,
+        evidence: '"Severity: High"',
+        fix: "Add priority (P1–P4) and justify severity: what percentage of users upload large files? Is this blocking a core workflow? Is there a workaround?",
+      },
+      {
+        id: "reproducibility",
+        score: 5,
+        evidence: '"This happens most of the time"',
+        fix: 'Quantify: "Reproducible ~80% of attempts with files >100MB." Note any conditions where uploads succeed (file type, network speed, etc.).',
+      },
+      {
+        id: "evidence",
+        score: 2,
+        evidence: '"No screenshot but I can get one if needed"',
+        fix: "Attach a screenshot of the error state and a network trace (DevTools → Network tab HAR export) showing the failed request and its status code.",
+      },
+      {
+        id: "clarity_scope",
+        score: 8,
+        evidence: "Report covers a single issue with neutral tone.",
+        fix: 'Good scope. Minor improvement: avoid approximations ("about 100MB") — use the exact tested file size (e.g., "112MB").',
+      },
     ],
     missing_fields: [
       "Exact Chrome version and Windows version",
@@ -236,7 +329,8 @@ Reporter also mentions "colors look weird sometimes" — this should be filed as
     severity_prediction: {
       severity: "High",
       priority: "P2",
-      reasoning: "Large file uploads failing blocks a core workflow for users working with media or documents. Warrants P2 pending confirmation of user impact scope and whether a workaround exists.",
+      reasoning:
+        "Large file uploads failing blocks a core workflow for users working with media or documents. Warrants P2 pending confirmation of user impact scope and whether a workaround exists.",
     },
     injection_detected: false,
     rewritten_report_markdown: `## Summary
@@ -270,26 +364,81 @@ Intermittent — occurs "most of the time" with files >100MB. [NEEDS INFO: Does 
 
 ## Evidence
 [NEEDS INFO: Screenshot of the error state after failed upload; Network trace (DevTools → Network → Export HAR) showing the failed upload request with HTTP status code]`,
-    summary_verdict: "This report has the right structure but needs sharpening. The exact error message, Chrome version, and a network trace are the highest-priority gaps before this can be assigned for investigation.",
+    summary_verdict:
+      "This report has the right structure but needs sharpening. The exact error message, Chrome version, and a network trace are the highest-priority gaps before this can be assigned for investigation.",
   },
 
   excellent: {
     criteria: [
-      { id: "title", score: 10, evidence: '"Profile avatar upload fails silently for PNG files >2MB on Safari 17.2"', fix: "No changes needed. Title is specific, actionable, includes symptom, file constraint, and browser context." },
-      { id: "steps_to_reproduce", score: 10, evidence: '"1. Log in as any standard user (tested with user@example.com) 2. Navigate to Settings → Profile..."', fix: "Excellent. Steps are numbered, atomic, start from a known state, and include specific test data." },
-      { id: "expected_result", score: 9, evidence: '"Avatar updates immediately with a success toast notification, and the new image appears in the profile header."', fix: "Near-perfect. Could optionally add expected HTTP response code (200) for engineer context." },
-      { id: "actual_result", score: 10, evidence: "\"The upload dialog closes without any feedback... Browser console shows: 'Error: Request failed with status 413'\"", fix: "No changes needed. Exact error message quoted verbatim, UI state described precisely." },
-      { id: "environment", score: 10, evidence: '"OS: macOS Sonoma 14.2.1 / Browser: Safari 17.2 (19617.1.17.11.12) / App version: v4.3.1 (build 2024.01.15-a3f9c) / Device: MacBook Pro M3 (2023)"', fix: "Complete. All four dimensions covered with precise version numbers." },
-      { id: "severity_priority", score: 10, evidence: '"High (P2) — Affects all Safari users attempting avatar updates. Safari represents ~18% of our user base per analytics dashboard."', fix: "Exemplary. Severity and priority both stated with data-backed justification." },
-      { id: "reproducibility", score: 10, evidence: '"100% reproducible with PNG >2MB on Safari 17.2. Chrome 120 and Firefox 121 handle the same files correctly."', fix: "Perfect. Rate stated, conditions specified, cross-browser comparison included." },
-      { id: "evidence", score: 9, evidence: '"Screenshot: console-413-error.png (attached) / HAR file: network-trace.har (attached) / Video: screen-recording-safari-upload-fail.mp4 (attached)"', fix: "Three types of evidence attached. Minor improvement: add one-sentence description of what each file shows." },
-      { id: "clarity_scope", score: 10, evidence: "Single issue, neutral professional tone, no scope creep.", fix: "No changes needed." },
+      {
+        id: "title",
+        score: 10,
+        evidence:
+          '"Profile avatar upload fails silently for PNG files >2MB on Safari 17.2"',
+        fix: "No changes needed. Title is specific, actionable, includes symptom, file constraint, and browser context.",
+      },
+      {
+        id: "steps_to_reproduce",
+        score: 10,
+        evidence:
+          '"1. Log in as any standard user (tested with user@example.com) 2. Navigate to Settings → Profile..."',
+        fix: "Excellent. Steps are numbered, atomic, start from a known state, and include specific test data.",
+      },
+      {
+        id: "expected_result",
+        score: 9,
+        evidence:
+          '"Avatar updates immediately with a success toast notification, and the new image appears in the profile header."',
+        fix: "Near-perfect. Could optionally add expected HTTP response code (200) for engineer context.",
+      },
+      {
+        id: "actual_result",
+        score: 10,
+        evidence:
+          "\"The upload dialog closes without any feedback... Browser console shows: 'Error: Request failed with status 413'\"",
+        fix: "No changes needed. Exact error message quoted verbatim, UI state described precisely.",
+      },
+      {
+        id: "environment",
+        score: 10,
+        evidence:
+          '"OS: macOS Sonoma 14.2.1 / Browser: Safari 17.2 (19617.1.17.11.12) / App version: v4.3.1 (build 2024.01.15-a3f9c) / Device: MacBook Pro M3 (2023)"',
+        fix: "Complete. All four dimensions covered with precise version numbers.",
+      },
+      {
+        id: "severity_priority",
+        score: 10,
+        evidence:
+          '"High (P2) — Affects all Safari users attempting avatar updates. Safari represents ~18% of our user base per analytics dashboard."',
+        fix: "Exemplary. Severity and priority both stated with data-backed justification.",
+      },
+      {
+        id: "reproducibility",
+        score: 10,
+        evidence:
+          '"100% reproducible with PNG >2MB on Safari 17.2. Chrome 120 and Firefox 121 handle the same files correctly."',
+        fix: "Perfect. Rate stated, conditions specified, cross-browser comparison included.",
+      },
+      {
+        id: "evidence",
+        score: 9,
+        evidence:
+          '"Screenshot: console-413-error.png (attached) / HAR file: network-trace.har (attached) / Video: screen-recording-safari-upload-fail.mp4 (attached)"',
+        fix: "Three types of evidence attached. Minor improvement: add one-sentence description of what each file shows.",
+      },
+      {
+        id: "clarity_scope",
+        score: 10,
+        evidence: "Single issue, neutral professional tone, no scope creep.",
+        fix: "No changes needed.",
+      },
     ],
     missing_fields: [],
     severity_prediction: {
       severity: "High",
       priority: "P2",
-      reasoning: "HTTP 413 (Request Entity Too Large) indicates the server payload limit is not uniformly enforced across browser clients. Affects ~18% of users on a profile update flow. No data loss risk, but silent failure erodes user trust.",
+      reasoning:
+        "HTTP 413 (Request Entity Too Large) indicates the server payload limit is not uniformly enforced across browser clients. Affects ~18% of users on a profile update flow. No data loss risk, but silent failure erodes user trust.",
     },
     injection_detected: false,
     rewritten_report_markdown: `## Summary
@@ -329,6 +478,7 @@ Error: Request failed with status 413
 - **console-413-error.png** — Browser console showing the HTTP 413 status error (attached)
 - **network-trace.har** — Full network trace of the failed upload request (attached)
 - **screen-recording-safari-upload-fail.mp4** — Screen recording demonstrating the silent failure UX (attached)`,
-    summary_verdict: "This report is triage-ready. All required fields are present with precise data. The root cause is identifiable (HTTP 413 suggests payload size limit not uniformly applied across browser clients), and evidence is comprehensive.",
+    summary_verdict:
+      "This report is triage-ready. All required fields are present with precise data. The root cause is identifiable (HTTP 413 suggests payload size limit not uniformly applied across browser clients), and evidence is comprehensive.",
   },
 };

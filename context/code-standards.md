@@ -5,6 +5,8 @@
 - **Principle**: Keep modules small, isolated, and single-purpose. Ensure scoring calculations, API interactions, and UI components remain distinct.
 - **Principle**: Fix root causes; do not layer workarounds over structural code defects.
 - **Principle**: Do not mix unrelated concerns in one component. Keep UI layout, error handling, and file export helpers decoupled.
+- **Principle**: Use Biome as the project linter and formatter. All source files must pass `npm run check` cleanly.
+
 
 ## TypeScript
 

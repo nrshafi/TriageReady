@@ -1,4 +1,4 @@
-import { SYSTEM_PROMPT, type GeminiResult } from "./constants";
+import { type GeminiResult, SYSTEM_PROMPT } from "./constants";
 
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent";
@@ -56,61 +56,92 @@ export function validateGeminiResult(data: unknown): GeminiResult {
   }
   for (const criterion of obj.criteria) {
     if (typeof criterion !== "object" || criterion === null) {
-      throw new Error("Invalid response format: 'criteria' items must be objects");
+      throw new Error(
+        "Invalid response format: 'criteria' items must be objects",
+      );
     }
     const c = criterion as Record<string, unknown>;
     if (typeof c.id !== "string") {
-      throw new Error("Invalid response format: criterion 'id' must be a string");
+      throw new Error(
+        "Invalid response format: criterion 'id' must be a string",
+      );
     }
-    if (typeof c.score !== "number" || isNaN(c.score)) {
-      throw new Error("Invalid response format: criterion 'score' must be a number");
+    if (typeof c.score !== "number" || Number.isNaN(c.score)) {
+      throw new Error(
+        "Invalid response format: criterion 'score' must be a number",
+      );
     }
     if (typeof c.evidence !== "string") {
-      throw new Error("Invalid response format: criterion 'evidence' must be a string");
+      throw new Error(
+        "Invalid response format: criterion 'evidence' must be a string",
+      );
     }
     if (typeof c.fix !== "string") {
-      throw new Error("Invalid response format: criterion 'fix' must be a string");
+      throw new Error(
+        "Invalid response format: criterion 'fix' must be a string",
+      );
     }
   }
 
   // Validate missing_fields
   if (!Array.isArray(obj.missing_fields)) {
-    throw new Error("Invalid response format: 'missing_fields' must be an array");
+    throw new Error(
+      "Invalid response format: 'missing_fields' must be an array",
+    );
   }
   for (const field of obj.missing_fields) {
     if (typeof field !== "string") {
-      throw new Error("Invalid response format: 'missing_fields' items must be strings");
+      throw new Error(
+        "Invalid response format: 'missing_fields' items must be strings",
+      );
     }
   }
 
   // Validate severity_prediction
-  if (typeof obj.severity_prediction !== "object" || obj.severity_prediction === null) {
-    throw new Error("Invalid response format: 'severity_prediction' must be an object");
+  if (
+    typeof obj.severity_prediction !== "object" ||
+    obj.severity_prediction === null
+  ) {
+    throw new Error(
+      "Invalid response format: 'severity_prediction' must be an object",
+    );
   }
   const sev = obj.severity_prediction as Record<string, unknown>;
   if (typeof sev.severity !== "string") {
-    throw new Error("Invalid response format: 'severity_prediction.severity' must be a string");
+    throw new Error(
+      "Invalid response format: 'severity_prediction.severity' must be a string",
+    );
   }
   if (typeof sev.priority !== "string") {
-    throw new Error("Invalid response format: 'severity_prediction.priority' must be a string");
+    throw new Error(
+      "Invalid response format: 'severity_prediction.priority' must be a string",
+    );
   }
   if (typeof sev.reasoning !== "string") {
-    throw new Error("Invalid response format: 'severity_prediction.reasoning' must be a string");
+    throw new Error(
+      "Invalid response format: 'severity_prediction.reasoning' must be a string",
+    );
   }
 
   // Validate injection_detected
   if (typeof obj.injection_detected !== "boolean") {
-    throw new Error("Invalid response format: 'injection_detected' must be a boolean");
+    throw new Error(
+      "Invalid response format: 'injection_detected' must be a boolean",
+    );
   }
 
   // Validate rewritten_report_markdown
   if (typeof obj.rewritten_report_markdown !== "string") {
-    throw new Error("Invalid response format: 'rewritten_report_markdown' must be a string");
+    throw new Error(
+      "Invalid response format: 'rewritten_report_markdown' must be a string",
+    );
   }
 
   // Validate summary_verdict
   if (typeof obj.summary_verdict !== "string") {
-    throw new Error("Invalid response format: 'summary_verdict' must be a string");
+    throw new Error(
+      "Invalid response format: 'summary_verdict' must be a string",
+    );
   }
 
   return data as GeminiResult;
@@ -118,7 +149,7 @@ export function validateGeminiResult(data: unknown): GeminiResult {
 
 export async function analyzeReport(
   apiKey: string,
-  reportText: string
+  reportText: string,
 ): Promise<GeminiResult> {
   const userMessage = `<bug_report>\n${reportText}\n</bug_report>\n\nAnalyze this bug report against the QA rubric and return a JSON response.`;
 

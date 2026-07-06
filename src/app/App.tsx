@@ -1,22 +1,32 @@
-import { useState, useEffect, useCallback, type ReactNode } from "react";
-import { Toaster, toast } from "sonner";
 import {
-  Key,
   AlertTriangle,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Copy,
   Download,
-  Loader2,
-  ChevronUp,
-  ChevronDown,
-  Zap,
-  FlaskConical,
   FileText,
+  FlaskConical,
+  Key,
+  Loader2,
   RotateCcw,
-  CheckCircle2,
+  Zap,
 } from "lucide-react";
-import { CRITERIA, SAMPLE_REPORTS, DEMO_RESPONSES, type GeminiResult } from "./constants";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { Toaster, toast } from "sonner";
 import { analyzeReport } from "./api";
-import { computeOverallScore, getGradeBand, scoreToBarColor, scoreToGlowColor } from "./scoring";
+import {
+  CRITERIA,
+  DEMO_RESPONSES,
+  type GeminiResult,
+  SAMPLE_REPORTS,
+} from "./constants";
+import {
+  computeOverallScore,
+  getGradeBand,
+  scoreToBarColor,
+  scoreToGlowColor,
+} from "./scoring";
 
 // ─── Markdown renderer with [NEEDS INFO] highlighting ────────────────────────
 
@@ -38,9 +48,12 @@ function renderMarkdown(text: string): ReactNode[] {
         i++;
       }
       nodes.push(
-        <pre key={k++} className="bg-background border border-border rounded p-3 my-3 overflow-x-auto text-xs font-mono text-secondary-foreground">
+        <pre
+          key={k++}
+          className="bg-background border border-border rounded p-3 my-3 overflow-x-auto text-xs font-mono text-secondary-foreground"
+        >
           <code>{codeLines.join("\n")}</code>
-        </pre>
+        </pre>,
       );
       i++;
       continue;
@@ -49,9 +62,12 @@ function renderMarkdown(text: string): ReactNode[] {
     // H2
     if (line.startsWith("## ")) {
       nodes.push(
-        <h2 key={k++} className="text-sm font-semibold text-foreground mt-5 mb-2 pb-1 border-b border-border/50 font-sans tracking-wide uppercase text-[11px] text-muted-foreground">
+        <h2
+          key={k++}
+          className="text-sm font-semibold text-foreground mt-5 mb-2 pb-1 border-b border-border/50 font-sans tracking-wide uppercase text-[11px] text-muted-foreground"
+        >
           {line.slice(3)}
-        </h2>
+        </h2>,
       );
       i++;
       continue;
@@ -60,9 +76,12 @@ function renderMarkdown(text: string): ReactNode[] {
     // H3
     if (line.startsWith("### ")) {
       nodes.push(
-        <h3 key={k++} className="text-sm font-semibold text-foreground mt-4 mb-1">
+        <h3
+          key={k++}
+          className="text-sm font-semibold text-foreground mt-4 mb-1"
+        >
           {renderInline(line.slice(4))}
-        </h3>
+        </h3>,
       );
       i++;
       continue;
@@ -78,11 +97,14 @@ function renderMarkdown(text: string): ReactNode[] {
       nodes.push(
         <ol key={k++} className="list-decimal list-inside space-y-1 my-2 pl-1">
           {items.map((item, idx) => (
-            <li key={idx} className="text-sm text-foreground/90 leading-relaxed">
+            <li
+              key={idx}
+              className="text-sm text-foreground/90 leading-relaxed"
+            >
               {renderInline(item)}
             </li>
           ))}
-        </ol>
+        </ol>,
       );
       continue;
     }
@@ -90,19 +112,25 @@ function renderMarkdown(text: string): ReactNode[] {
     // Bullet list item
     if (line.startsWith("- ") || line.startsWith("* ")) {
       const items: string[] = [];
-      while (i < lines.length && (lines[i].startsWith("- ") || lines[i].startsWith("* "))) {
+      while (
+        i < lines.length &&
+        (lines[i].startsWith("- ") || lines[i].startsWith("* "))
+      ) {
         items.push(lines[i].slice(2));
         i++;
       }
       nodes.push(
         <ul key={k++} className="space-y-1 my-2 pl-1">
           {items.map((item, idx) => (
-            <li key={idx} className="text-sm text-foreground/90 leading-relaxed flex gap-2">
+            <li
+              key={idx}
+              className="text-sm text-foreground/90 leading-relaxed flex gap-2"
+            >
               <span className="text-muted-foreground mt-0.5 shrink-0">–</span>
               <span>{renderInline(item)}</span>
             </li>
           ))}
-        </ul>
+        </ul>,
       );
       continue;
     }
@@ -118,7 +146,7 @@ function renderMarkdown(text: string): ReactNode[] {
     nodes.push(
       <p key={k++} className="text-sm text-foreground/90 leading-relaxed my-1">
         {renderInline(line)}
-      </p>
+      </p>,
     );
     i++;
   }
@@ -147,14 +175,29 @@ function renderInline(text: string): ReactNode[] {
           title="TriageReady flags unknowns instead of inventing them."
         >
           {content}
-        </span>
+        </span>,
       );
     } else if (token.startsWith("**")) {
-      parts.push(<strong key={match.index} className="font-semibold text-foreground">{token.slice(2, -2)}</strong>);
+      parts.push(
+        <strong key={match.index} className="font-semibold text-foreground">
+          {token.slice(2, -2)}
+        </strong>,
+      );
     } else if (token.startsWith("*")) {
-      parts.push(<em key={match.index} className="italic text-foreground/80">{token.slice(1, -1)}</em>);
+      parts.push(
+        <em key={match.index} className="italic text-foreground/80">
+          {token.slice(1, -1)}
+        </em>,
+      );
     } else if (token.startsWith("`")) {
-      parts.push(<code key={match.index} className="px-1 py-0.5 rounded text-[11px] font-mono bg-background border border-border text-secondary-foreground">{token.slice(1, -1)}</code>);
+      parts.push(
+        <code
+          key={match.index}
+          className="px-1 py-0.5 rounded text-[11px] font-mono bg-background border border-border text-secondary-foreground"
+        >
+          {token.slice(1, -1)}
+        </code>,
+      );
     }
     last = match.index + token.length;
   }
@@ -182,25 +225,84 @@ function Logo({ className = "w-8 h-8" }: { className?: string }) {
           <stop offset="100%" stopColor="var(--success)" />
         </linearGradient>
         <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="var(--success)" floodOpacity="0.6"/>
+          <feDropShadow
+            dx="0"
+            dy="0"
+            stdDeviation="3.5"
+            floodColor="var(--success)"
+            floodOpacity="0.6"
+          />
         </filter>
         <filter id="logoBlueGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="var(--primary)" floodOpacity="0.4"/>
+          <feDropShadow
+            dx="0"
+            dy="0"
+            stdDeviation="3.5"
+            floodColor="var(--primary)"
+            floodOpacity="0.4"
+          />
         </filter>
       </defs>
 
       {/* Outer target circle segment */}
-      <circle cx="50" cy="50" r="44" fill="none" stroke="url(#logoGrad)" strokeWidth="4.5" strokeDasharray="18 14" strokeLinecap="round" opacity="0.8" />
+      <circle
+        cx="50"
+        cy="50"
+        r="44"
+        fill="none"
+        stroke="url(#logoGrad)"
+        strokeWidth="4.5"
+        strokeDasharray="18 14"
+        strokeLinecap="round"
+        opacity="0.8"
+      />
 
       {/* Inner target circle */}
-      <circle cx="50" cy="50" r="30" fill="none" stroke="var(--border)" strokeWidth="4" />
-      <circle cx="50" cy="50" r="30" fill="none" stroke="url(#logoGrad)" strokeWidth="4" strokeDasharray="70 90" strokeLinecap="round" />
+      <circle
+        cx="50"
+        cy="50"
+        r="30"
+        fill="none"
+        stroke="var(--border)"
+        strokeWidth="4"
+      />
+      <circle
+        cx="50"
+        cy="50"
+        r="30"
+        fill="none"
+        stroke="url(#logoGrad)"
+        strokeWidth="4"
+        strokeDasharray="70 90"
+        strokeLinecap="round"
+      />
 
       {/* Stylized T-Checkmark combo */}
       <g transform="translate(0, 1)">
-        <rect x="24" y="28" width="52" height="6" rx="3" fill="var(--foreground)" filter="url(#logoBlueGlow)" />
-        <path d="M50 28 V 56" stroke="var(--foreground)" strokeWidth="6.5" strokeLinecap="round" />
-        <path d="M38 52 L 49.5 63.5 L 74 31" fill="none" stroke="var(--success)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" filter="url(#logoGlow)" />
+        <rect
+          x="24"
+          y="28"
+          width="52"
+          height="6"
+          rx="3"
+          fill="var(--foreground)"
+          filter="url(#logoBlueGlow)"
+        />
+        <path
+          d="M50 28 V 56"
+          stroke="var(--foreground)"
+          strokeWidth="6.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M38 52 L 49.5 63.5 L 74 31"
+          fill="none"
+          stroke="var(--success)"
+          strokeWidth="7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          filter="url(#logoGlow)"
+        />
       </g>
     </svg>
   );
@@ -208,7 +310,15 @@ function Logo({ className = "w-8 h-8" }: { className?: string }) {
 
 // ─── Radial Gauge ─────────────────────────────────────────────────────────────
 
-function RadialGauge({ score, color, glow }: { score: number; color: string; glow: string }) {
+function RadialGauge({
+  score,
+  color,
+  glow,
+}: {
+  score: number;
+  color: string;
+  glow: string;
+}) {
   const [animated, setAnimated] = useState(false);
   const [displayNum, setDisplayNum] = useState(0);
   const circumference = 2 * Math.PI * 40;
@@ -220,7 +330,7 @@ function RadialGauge({ score, color, glow }: { score: number; color: string; glo
     const duration = 1200;
     const animate = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const eased = 1 - (1 - progress) ** 3;
       setDisplayNum(Math.round(eased * score));
       if (progress < 1) frame = requestAnimationFrame(animate);
     };
@@ -235,7 +345,10 @@ function RadialGauge({ score, color, glow }: { score: number; color: string; glo
   const dashOffset = 0;
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 160, height: 160 }}>
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: 160, height: 160 }}
+    >
       <svg
         viewBox="0 0 100 100"
         width={160}
@@ -275,7 +388,9 @@ function RadialGauge({ score, color, glow }: { score: number; color: string; glo
         >
           {displayNum}
         </span>
-        <span className="text-xs text-muted-foreground font-mono mt-0.5">/100</span>
+        <span className="text-xs text-muted-foreground font-mono mt-0.5">
+          /100
+        </span>
       </div>
     </div>
   );
@@ -307,7 +422,9 @@ function CategoryBar({
       onMouseLeave={() => setTooltipVisible(false)}
     >
       <div className="flex items-center gap-3 py-2">
-        <span className="text-sm text-muted-foreground w-44 shrink-0 font-sans">{label}</span>
+        <span className="text-sm text-muted-foreground w-44 shrink-0 font-sans">
+          {label}
+        </span>
         <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-700 ease-out"
@@ -329,11 +446,17 @@ function CategoryBar({
       {tooltipVisible && (
         <div className="absolute left-48 top-0 z-50 w-80 bg-tooltip-background border border-border rounded-lg p-3 shadow-xl pointer-events-none">
           <div className="mb-2">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">Evidence</span>
-            <p className="text-xs text-foreground/80 mt-1 font-mono leading-relaxed">{evidence}</p>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+              Evidence
+            </span>
+            <p className="text-xs text-foreground/80 mt-1 font-mono leading-relaxed">
+              {evidence}
+            </p>
           </div>
           <div>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">Suggested fix</span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+              Suggested fix
+            </span>
             <p className="text-xs text-primary mt-1 leading-relaxed">{fix}</p>
           </div>
         </div>
@@ -345,11 +468,7 @@ function CategoryBar({
 // ─── Skeleton loader ──────────────────────────────────────────────────────────
 
 function Skeleton({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={`rounded bg-secondary animate-pulse ${className}`}
-    />
-  );
+  return <div className={`rounded bg-secondary animate-pulse ${className}`} />;
 }
 
 function SkeletonDashboard() {
@@ -538,7 +657,9 @@ export default function App() {
 
   const handleDownload = () => {
     if (!result) return;
-    const blob = new Blob([result.rewritten_report_markdown], { type: "text/markdown" });
+    const blob = new Blob([result.rewritten_report_markdown], {
+      type: "text/markdown",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -573,7 +694,9 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Logo className="w-8 h-8 shrink-0" />
-            <span className="font-semibold text-sm text-foreground tracking-tight">TriageReady</span>
+            <span className="font-semibold text-sm text-foreground tracking-tight">
+              TriageReady
+            </span>
             <span className="hidden sm:block text-[11px] text-muted-foreground border-l border-border pl-3 ml-1">
               From rant to triage-ready in one click.
             </span>
@@ -611,7 +734,6 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 pb-16">
-
         {/* ── SETUP STATE ── */}
         {appState === "setup" && (
           <div className="min-h-[80vh] flex items-center justify-center">
@@ -620,7 +742,9 @@ export default function App() {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-secondary border border-border/80 mb-4 shadow-inner">
                   <Logo className="w-14 h-14 animate-[pulse_3s_infinite_ease-in-out]" />
                 </div>
-                <h1 className="text-xl font-semibold text-foreground mb-2">Connect your Gemini key</h1>
+                <h1 className="text-xl font-semibold text-foreground mb-2">
+                  Connect your Gemini key
+                </h1>
                 <p className="text-sm text-muted-foreground">
                   Grade bug reports against a 9-criterion QA rubric.
                 </p>
@@ -635,7 +759,9 @@ export default function App() {
                     type="password"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSaveAndContinue()}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleSaveAndContinue()
+                    }
                     placeholder="AIza..."
                     className="w-full bg-secondary border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors"
                     autoComplete="off"
@@ -653,12 +779,24 @@ export default function App() {
                     }`}
                   >
                     {rememberKey && (
-                      <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 10 10" fill="none">
-                        <path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <svg
+                        className="w-2.5 h-2.5 text-white"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                      >
+                        <path
+                          d="M2 5l2.5 2.5L8 3"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                   </div>
-                  <span className="text-sm text-muted-foreground">Remember on this device</span>
+                  <span className="text-sm text-muted-foreground">
+                    Remember on this device
+                  </span>
                 </label>
 
                 <div className="pt-1 flex flex-col gap-2">
@@ -677,8 +815,11 @@ export default function App() {
                 </div>
 
                 <p className="text-[11px] text-muted-foreground text-center leading-relaxed pt-1">
-                  Your key stays in your browser and is sent only to Google's API.{" "}
-                  <span className="text-foreground/60">This site has no server.</span>
+                  Your key stays in your browser and is sent only to Google's
+                  API.{" "}
+                  <span className="text-foreground/60">
+                    This site has no server.
+                  </span>
                 </p>
               </div>
             </div>
@@ -695,15 +836,24 @@ export default function App() {
                 <div className="flex items-center gap-3">
                   <Logo className="w-10 h-10 shrink-0" />
                   <div>
-                    <h2 className="text-sm font-semibold text-foreground leading-tight">TriageReady Grader</h2>
-                    <p className="text-[11px] text-muted-foreground">QA Assistant</p>
+                    <h2 className="text-sm font-semibold text-foreground leading-tight">
+                      TriageReady Grader
+                    </h2>
+                    <p className="text-[11px] text-muted-foreground">
+                      QA Assistant
+                    </p>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Paste your raw, unstructured bug report or feedback. The system analyzes it against a 9-criterion rubric to grade its quality and generate a clean, structured, non-hallucinated rewrite.
+                  Paste your raw, unstructured bug report or feedback. The
+                  system analyzes it against a 9-criterion rubric to grade its
+                  quality and generate a clean, structured, non-hallucinated
+                  rewrite.
                 </p>
                 <div className="border-t border-border/60 pt-3">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block mb-2">Evaluation Rubric</span>
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block mb-2">
+                    Evaluation Rubric
+                  </span>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] text-foreground/80 font-mono">
                     <div>• Title (10%)</div>
                     <div>• Repro steps (25%)</div>
@@ -720,41 +870,55 @@ export default function App() {
 
               {/* Sample Cards Selection */}
               <div className="space-y-3">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block px-1">Select a Quick Sample</span>
+                <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block px-1">
+                  Select a Quick Sample
+                </span>
                 <div className="flex flex-col gap-2.5">
-                  {(["terrible", "mediocre", "excellent"] as const).map((key, idx) => {
-                    const titles = ["😱 Terrible Report", "😐 Mediocre Report", "✨ Excellent Report"];
-                    const descs = [
-                      "Extremely vague. No environment, steps, expected or actual results.",
-                      "Some useful information, but missing key environment specifications and evidence.",
-                      "Highly structured. Contains steps, environments, and precise descriptions."
-                    ];
-                    const active = activeSample === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => handleSamplePick(key)}
-                        disabled={appState === "loading"}
-                        className={`text-left p-3.5 rounded-xl border transition-all duration-300 ${
-                          active
-                            ? "bg-[#4493f8]/10 border-[#4493f8] shadow-[0_0_12px_rgba(68,147,248,0.15)]"
-                            : "bg-card border-border hover:border-[#4493f8]/40 hover:bg-[#161b22]/80"
-                        } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer group`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-xs font-semibold ${active ? "text-[#4493f8]" : "text-foreground group-hover:text-foreground"}`}>
-                            {titles[idx]}
-                          </span>
-                          <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border">
-                            {key === "terrible" ? "Score ~10" : key === "mediocre" ? "Score ~50" : "Score ~95"}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">
-                          {descs[idx]}
-                        </p>
-                      </button>
-                    );
-                  })}
+                  {(["terrible", "mediocre", "excellent"] as const).map(
+                    (key, idx) => {
+                      const titles = [
+                        "😱 Terrible Report",
+                        "😐 Mediocre Report",
+                        "✨ Excellent Report",
+                      ];
+                      const descs = [
+                        "Extremely vague. No environment, steps, expected or actual results.",
+                        "Some useful information, but missing key environment specifications and evidence.",
+                        "Highly structured. Contains steps, environments, and precise descriptions.",
+                      ];
+                      const active = activeSample === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => handleSamplePick(key)}
+                          disabled={appState === "loading"}
+                          className={`text-left p-3.5 rounded-xl border transition-all duration-300 ${
+                            active
+                              ? "bg-[#4493f8]/10 border-[#4493f8] shadow-[0_0_12px_rgba(68,147,248,0.15)]"
+                              : "bg-card border-border hover:border-[#4493f8]/40 hover:bg-[#161b22]/80"
+                          } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer group`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span
+                              className={`text-xs font-semibold ${active ? "text-[#4493f8]" : "text-foreground group-hover:text-foreground"}`}
+                            >
+                              {titles[idx]}
+                            </span>
+                            <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border">
+                              {key === "terrible"
+                                ? "Score ~10"
+                                : key === "mediocre"
+                                  ? "Score ~50"
+                                  : "Score ~95"}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">
+                            {descs[idx]}
+                          </p>
+                        </button>
+                      );
+                    },
+                  )}
                 </div>
               </div>
             </div>
@@ -832,10 +996,18 @@ export default function App() {
               >
                 <div className="flex items-center gap-2">
                   <FileText className="w-3.5 h-3.5" />
-                  <span className="text-[11px] uppercase tracking-wider font-medium">Original report</span>
-                  <span className="text-[11px] text-muted-foreground font-mono">{reportText.length} chars</span>
+                  <span className="text-[11px] uppercase tracking-wider font-medium">
+                    Original report
+                  </span>
+                  <span className="text-[11px] text-muted-foreground font-mono">
+                    {reportText.length} chars
+                  </span>
                 </div>
-                {inputCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                {inputCollapsed ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronUp className="w-4 h-4" />
+                )}
               </button>
               {!inputCollapsed && (
                 <div className="px-4 pb-4 border-t border-border">
@@ -851,7 +1023,8 @@ export default function App() {
               <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm">
                 <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
                 <span className="text-red-400 font-medium">
-                  ⚠ This report attempted to manipulate the grader — scored on actual content.
+                  ⚠ This report attempted to manipulate the grader — scored on
+                  actual content.
                 </span>
               </div>
             )}
@@ -863,14 +1036,20 @@ export default function App() {
                 {/* Hero score */}
                 <div className="bg-card border border-border rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start hover:border-[#4493f8]/20 transition-all duration-300">
                   <div className="shrink-0">
-                    <RadialGauge score={score} color={gradeBand.hex} glow={gradeBand.glow} />
+                    <RadialGauge
+                      score={score}
+                      color={gradeBand.hex}
+                      glow={gradeBand.glow}
+                    />
                   </div>
                   <div className="flex-1 flex flex-col justify-center text-center sm:text-left">
                     <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">
                       Is this report triage-ready?
                     </p>
                     <div className="flex items-center gap-3 justify-center sm:justify-start mb-3">
-                      <span className="font-mono text-4xl font-semibold text-foreground">{score}</span>
+                      <span className="font-mono text-4xl font-semibold text-foreground">
+                        {score}
+                      </span>
                       <span
                         className={`text-xs font-medium px-3 py-1 rounded-full ${gradeBand.pillBg} ${gradeBand.pillText}`}
                       >
@@ -894,10 +1073,10 @@ export default function App() {
                         result.severity_prediction.severity === "Critical"
                           ? "bg-red-500/15 border-red-500/30 text-red-400"
                           : result.severity_prediction.severity === "High"
-                          ? "bg-orange-500/15 border-orange-500/30 text-orange-400"
-                          : result.severity_prediction.severity === "Medium"
-                          ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-400"
-                          : "bg-secondary border-border text-muted-foreground"
+                            ? "bg-orange-500/15 border-orange-500/30 text-orange-400"
+                            : result.severity_prediction.severity === "Medium"
+                              ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-400"
+                              : "bg-secondary border-border text-muted-foreground"
                       }`}
                     >
                       {result.severity_prediction.severity}
@@ -914,20 +1093,27 @@ export default function App() {
                 {/* Missing info */}
                 <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
                   <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3 flex items-center gap-2">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Missing Information
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />{" "}
+                    Missing Information
                   </h2>
                   {result.missing_fields.length === 0 ? (
                     <p className="text-xs text-green-400 flex items-center gap-2 font-mono">
-                      <CheckCircle2 className="w-4 h-4" /> All required fields present.
+                      <CheckCircle2 className="w-4 h-4" /> All required fields
+                      present.
                     </p>
                   ) : (
                     <ul className="space-y-2">
                       {result.missing_fields.map((field, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs">
+                        <li
+                          key={i}
+                          className="flex items-start gap-2.5 text-xs"
+                        >
                           <span className="w-3.5 h-3.5 rounded border border-amber-500/40 bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                           </span>
-                          <span className="text-foreground/80 font-mono">{field}</span>
+                          <span className="text-foreground/80 font-mono">
+                            {field}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -944,7 +1130,9 @@ export default function App() {
                   </h2>
                   <div className="space-y-0.5">
                     {CRITERIA.map((criterion) => {
-                      const cr = result.criteria.find((c) => c.id === criterion.id);
+                      const cr = result.criteria.find(
+                        (c) => c.id === criterion.id,
+                      );
                       return (
                         <CategoryBar
                           key={criterion.id}
@@ -996,7 +1184,9 @@ export default function App() {
 
             {/* Export actions */}
             <div className="flex items-center gap-3 flex-wrap pt-2">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">Export:</span>
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+                Export:
+              </span>
               <button
                 onClick={handleCopyMd}
                 className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"

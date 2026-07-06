@@ -22,3 +22,13 @@ meaningful implementation change.
 If implementation changes the architecture, scope, or
 standards documented in the context files, update the
 relevant file before continuing.
+
+## Coding Rules & Quality Checks
+
+- **Node.js**: The codebase targets **Node.js >= 24.0.0**. Ensure all features and syntax are compatible.
+- **Code Formatting & Linting**: This project uses **Biome** as its unified formatter and linter.
+- **Mandatory Pre-commit Check**: Before concluding any coding task, you must run:
+  ```bash
+  npm run check
+  ```
+  Ensure it compiles and checks clean. Avoid introducing ESLint or Prettier settings.

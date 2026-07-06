@@ -17,13 +17,14 @@ TriageReady is a modern, client-side web application designed to help developers
 - **Framework**: Vite + React + TypeScript
 - **UI/Styles**: Tailwind CSS v4 + Lucide Icons
 - **AI Engine**: Gemini 3.1 Flash Lite API (`gemini-3.1-flash-lite`)
+- **Linter/Formatter**: Biome (`@biomejs/biome`)
 - **Data Flow**: Pure client-side storage (localStorage) for API keys; zero remote data storage to protect key credentials.
 
 ## Getting Started
 
 ### Prerequisites
 
-Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
+Make sure you have [Node.js](https://nodejs.org/) (v24 or higher) installed on your machine.
 
 ### Installation
 
@@ -38,3 +39,20 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
    ```
 
 3. Open your browser and navigate to the displayed URL (typically `http://localhost:5173`).
+
+### Linting and Formatting
+
+This project uses [Biome](https://biomejs.dev/) to format and lint the code.
+
+- **Check linting and formatting issues**:
+  ```bash
+  npm run lint
+  ```
+- **Automatically format files**:
+  ```bash
+  npm run format
+  ```
+- **Run all checks (linting, formatting) and auto-apply safe fixes**:
+  ```bash
+  npm run check
+  ```

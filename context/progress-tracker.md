@@ -17,6 +17,7 @@
 - **No-Hallucination Rewriter Rendering**: Created a custom client-side Markdown rendering logic highlighting unresolved elements tagged with `[NEEDS INFO]`.
 - **Export Utilities**: Designed custom export bridges, allowing users to copy standardized reports in both standard Markdown and Jira formats, and to download local `.md` files.
 - **Demo Simulation Mode**: Programmed offline mock data integration for all three quick-sample templates.
+- **GitHub Pages Deployment**: Added Vite base path `/TriageReady/` configuration and created automated deployment workflow using GitHub Actions.
 
 ## In Progress
 
@@ -40,5 +41,7 @@
 
 - Completed baseline repository mapping. All `.md` context specification files are updated to represent the active repository state.
 - Updated Gemini model from `Gemini 2.5 Flash` to `Gemini 3.1 Flash Lite` across the API implementation, project documentation, and README.md.
+- Configured Vite base path and created GitHub Actions workflow `.github/workflows/deploy.yml` for automated GitHub Pages deployment.
+- Updated the application's target Node.js version to v24 (latest LTS as of 2026) across GitHub Actions (`.github/workflows/deploy.yml`) and `package.json` (`engines` constraint).
 
 

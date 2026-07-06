@@ -39,7 +39,8 @@ All colors are defined as CSS variables in `src/styles/theme.css`. The applicati
 
 ## Component Library
 
-Custom components are built on top of Tailwind CSS using Radix UI accessible primitives. Components are located in `src/app/components/ui/` (e.g. `dialog.tsx`, `progress.tsx`, `separator.tsx`, `tooltip.tsx`, `alert.tsx`, etc.). Custom layout controls (like `RadialGauge`, `CategoryBar`, `SkeletonDashboard`) are implemented inside `src/app/App.tsx`.
+All interface panels, forms, and custom layout controls (like `RadialGauge`, `CategoryBar`, `SkeletonDashboard`, cards, alerts, and inputs) are built on top of Tailwind CSS v4 and are implemented directly inside `src/app/App.tsx`.
+
 
 ## Layout Patterns
 

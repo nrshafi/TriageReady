@@ -6,7 +6,6 @@
 | --------- | --------------------------- | ------ |
 | Framework | Vite + React + TypeScript   | Frontend Client application framework |
 | UI/Styles | Tailwind CSS v4             | Utility-first styling engine |
-| UI Library| Radix UI primitives / shadcn| Base accessible UI components |
 | Icons     | Lucide React                | Stroke-based icon set |
 | Hosting   | Client-only deployment      | Pure frontend client, no server backend needed |
 | API Layer | Gemini 3.1 Flash Lite API   | REST endpoint for parsing and rewriting reports |
@@ -18,7 +17,6 @@
 - `src/app/api.ts` — Manages communication logic to Google Generative Language REST APIs; defines system prompts and JSON schema verification rules.
 - `src/app/constants.ts` — Holds hardcoded application data including evaluation guidelines, raw system prompt context, sample bug reports, and mock demo responses.
 - `src/app/scoring.ts` — Implements overall weighted score calculation formulas and translates numerical grades to semantic categories and colors.
-- `src/app/components/ui/` — Low-level styling component primitives (buttons, dialogs, cards, tooltips, etc.) adapted from shadcn.
 - `src/styles/` — Core design sheets storing CSS custom property tokens, tailwind imports, and custom font definitions.
 
 ## Storage Model

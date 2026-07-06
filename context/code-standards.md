@@ -31,7 +31,6 @@
 ## File Organization
 
 - `src/app/` — Houses primary source components (`App.tsx`), Gemini REST handlers (`api.ts`), custom constants/prompts (`constants.ts`), and rating computations (`scoring.ts`).
-- `src/app/components/ui/` — Low-level, reusable visual components implementing the global stylesheet variables.
-- `src/app/components/figma/` — Bridge wrapper elements connecting figma designs (e.g. fallback layout handlers).
 - `src/styles/` — Style configuration layer establishing CSS variable references, typography overrides, and custom fonts.
+
 

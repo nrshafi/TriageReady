@@ -18,14 +18,15 @@
 - **Export Utilities**: Designed custom export bridges, allowing users to copy standardized reports in both standard Markdown and Jira formats, and to download local `.md` files.
 - **Demo Simulation Mode**: Programmed offline mock data integration for all three quick-sample templates.
 - **GitHub Pages Deployment**: Added Vite base path `/TriageReady/` configuration and created automated deployment workflow using GitHub Actions.
+- **Dependency & Size Optimization**: Cleaned up package.json dependencies, removing 197 unused packages (e.g. Radix UI, MUI, Recharts, Framer Motion) and deleted the unused `src/app/components/` directory, reducing package size and compiling with a clean 228KB build.
 
 ## In Progress
 
-- **System Context Alignment**: Replacing placeholder context documentation with project-specific architectural specifications and developer rules.
+- None
 
 ## Next Up
 
-- **Optimization**: Review UI animations, verify responsive layout behaviors across mobile viewports, and audit bundle sizes.
+- **Optimization**: Review UI animations, and verify responsive layout behaviors across mobile viewports.
 
 ## Open Questions
 
@@ -43,5 +44,7 @@
 - Updated Gemini model from `Gemini 2.5 Flash` to `Gemini 3.1 Flash Lite` across the API implementation, project documentation, and README.md.
 - Configured Vite base path and created GitHub Actions workflow `.github/workflows/deploy.yml` for automated GitHub Pages deployment.
 - Updated the application's target Node.js version to v24 (latest LTS as of 2026) across GitHub Actions (`.github/workflows/deploy.yml`) and `package.json` (`engines` constraint).
+- Reduced package.json dependencies to only `lucide-react` and `sonner`, uninstalled 197 unused packages, deleted the unused `src/app/components` folder, and updated system context documentation references accordingly.
+
 
 

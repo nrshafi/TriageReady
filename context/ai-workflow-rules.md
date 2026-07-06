@@ -27,8 +27,8 @@ If a set of edits cannot be verified immediately inside the dev preview, the sco
 ## Protected Files
 
 Do not modify the following unless explicitly instructed:
-- Core Radix UI primitives under `src/app/components/ui/*` (these are boilerplate and shouldn't be altered unless adding specific styling overrides).
 - Global theme definitions inside `src/styles/fonts.css` and `src/styles/globals.css`.
+
 
 ## Keeping Docs in Sync
 

@@ -11,7 +11,8 @@ export function computeOverallScore(result: GeminiResult): number {
 
 export type GradeBand = {
   label: string;
-  hex: string;
+  hex: string; // retains the name but holds a CSS variable, e.g. "var(--success)"
+  glow: string; // new field for the matching glow CSS variable, e.g. "var(--success-glow)"
   pillBg: string;
   pillText: string;
   barColor: string;
@@ -21,39 +22,50 @@ export function getGradeBand(score: number): GradeBand {
   if (score >= 85)
     return {
       label: "✓ Triage-ready",
-      hex: "#3fb950",
+      hex: "var(--success)",
+      glow: "var(--success-glow)",
       pillBg: "bg-green-500/15 border border-green-500/30",
       pillText: "text-green-400",
-      barColor: "#3fb950",
+      barColor: "var(--success)",
     };
   if (score >= 70)
     return {
       label: "Minor gaps",
-      hex: "#d29922",
+      hex: "var(--warning)",
+      glow: "var(--warning-glow)",
       pillBg: "bg-yellow-500/15 border border-yellow-500/30",
       pillText: "text-yellow-400",
-      barColor: "#d29922",
+      barColor: "var(--warning)",
     };
   if (score >= 50)
     return {
       label: "Needs work",
-      hex: "#f0883e",
+      hex: "var(--orange)",
+      glow: "var(--orange-glow)",
       pillBg: "bg-orange-500/15 border border-orange-500/30",
       pillText: "text-orange-400",
-      barColor: "#f0883e",
+      barColor: "var(--orange)",
     };
   return {
     label: "Rewrite required",
-    hex: "#f85149",
+    hex: "var(--destructive)",
+    glow: "var(--destructive-glow)",
     pillBg: "bg-red-500/15 border border-red-500/30",
     pillText: "text-red-400",
-    barColor: "#f85149",
+    barColor: "var(--destructive)",
   };
 }
 
 export function scoreToBarColor(score: number): string {
-  if (score >= 8) return "#3fb950";
-  if (score >= 6) return "#d29922";
-  if (score >= 4) return "#f0883e";
-  return "#f85149";
+  if (score >= 8) return "var(--success)";
+  if (score >= 6) return "var(--warning)";
+  if (score >= 4) return "var(--orange)";
+  return "var(--destructive)";
+}
+
+export function scoreToGlowColor(score: number): string {
+  if (score >= 8) return "var(--success-glow)";
+  if (score >= 6) return "var(--warning-glow)";
+  if (score >= 4) return "var(--orange-glow)";
+  return "var(--destructive-glow)";
 }

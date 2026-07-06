@@ -21,6 +21,7 @@
 - **Visual Branding & Identity**: Generated and integrated a custom high-fidelity geometric logo (T and checkmark target theme) as an inline SVG component, standalone browser favicon, and PNG asset. Optimized stroke weight and size parameters for clear, bold visibility (w-8 in header, w-14 in Setup view).
 - **Dependency & Size Optimization**: Cleaned up package.json dependencies, removing 197 unused packages (e.g. Radix UI, MUI, Recharts, Framer Motion) and deleted the unused `src/app/components/` directory, reducing package size and compiling with a clean 228KB build.
 - **Restructured Layout & Whitespace**: Converted the narrow 896px single-column layout into a spacious 1280px desktop dashboard layout. Reorganized the Input screen into a 2-column view (sidebar with rubric guide & sample picker; right side with textarea) and the Results screen into a 2-column top grid (metrics stack left, category details right) and a spacious full-width comparison view at the bottom. This utilizes desktop whitespace effectively and improves UX.
+- **Code Standards Compliance**: Refactored components (`Logo`, `RadialGauge`, `CategoryBar`, `Toaster`, code block elements, tooltips) to retrieve all colors and glow effects from CSS variables inside `theme.css`, eliminating hardcoded hex values. Implemented robust runtime schema validation at the Gemini API integration boundary (`api.ts`) to verify incoming payloads before trusting them in components.
 
 ## In Progress
 
@@ -49,6 +50,7 @@
 - Reduced package.json dependencies to only `lucide-react` and `sonner`, uninstalled 197 unused packages, deleted the unused `src/app/components` folder, and updated system context documentation references accordingly.
 - Optimized whitespace usage across Input and Results screens by introducing a responsive 2-column dashboard layout on desktop viewports. Restructured sample selections and rubric previews, resolved a missing icon import, and verified production bundle compilation.
 - Updated `context/code-standards.md` to align with requested categories (General, TypeScript, Styling, API Integration, Data/Storage, File Organization), customizing principles, rules, and conventions for the Vite/React client-side environment.
+- Refactored styles and API responses to fully align with standard guidelines. Exchanged all inline/component hex colors for CSS variable tokens, updated SVGs/RadialGauges/Tooltips/Toaster configs, added `scoreToGlowColor` for glows, and introduced strict schema validation on the Gemini API parser boundary. Verified production bundle compilation successfully.
 
 
 

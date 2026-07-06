@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { CRITERIA, SAMPLE_REPORTS, DEMO_RESPONSES, type GeminiResult } from "./constants";
 import { analyzeReport } from "./api";
-import { computeOverallScore, getGradeBand, scoreToBarColor } from "./scoring";
+import { computeOverallScore, getGradeBand, scoreToBarColor, scoreToGlowColor } from "./scoring";
 
 // ─── Markdown renderer with [NEEDS INFO] highlighting ────────────────────────
 
@@ -38,7 +38,7 @@ function renderMarkdown(text: string): ReactNode[] {
         i++;
       }
       nodes.push(
-        <pre key={k++} className="bg-[#0d1117] border border-border rounded p-3 my-3 overflow-x-auto text-xs font-mono text-[#c9d1d9]">
+        <pre key={k++} className="bg-background border border-border rounded p-3 my-3 overflow-x-auto text-xs font-mono text-secondary-foreground">
           <code>{codeLines.join("\n")}</code>
         </pre>
       );
@@ -154,7 +154,7 @@ function renderInline(text: string): ReactNode[] {
     } else if (token.startsWith("*")) {
       parts.push(<em key={match.index} className="italic text-foreground/80">{token.slice(1, -1)}</em>);
     } else if (token.startsWith("`")) {
-      parts.push(<code key={match.index} className="px-1 py-0.5 rounded text-[11px] font-mono bg-[#0d1117] border border-border text-[#c9d1d9]">{token.slice(1, -1)}</code>);
+      parts.push(<code key={match.index} className="px-1 py-0.5 rounded text-[11px] font-mono bg-background border border-border text-secondary-foreground">{token.slice(1, -1)}</code>);
     }
     last = match.index + token.length;
   }
@@ -177,15 +177,15 @@ function Logo({ className = "w-8 h-8" }: { className?: string }) {
     >
       <defs>
         <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#4493f8" />
-          <stop offset="50%" stop-color="#06b6d4" />
-          <stop offset="100%" stop-color="#3fb950" />
+          <stop offset="0%" stopColor="var(--primary)" />
+          <stop offset="50%" stopColor="var(--logo-cyan)" />
+          <stop offset="100%" stopColor="var(--success)" />
         </linearGradient>
         <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#3fb950" flood-opacity="0.6"/>
+          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="var(--success)" floodOpacity="0.6"/>
         </filter>
         <filter id="logoBlueGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#4493f8" flood-opacity="0.4"/>
+          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="var(--primary)" floodOpacity="0.4"/>
         </filter>
       </defs>
 
@@ -193,14 +193,14 @@ function Logo({ className = "w-8 h-8" }: { className?: string }) {
       <circle cx="50" cy="50" r="44" fill="none" stroke="url(#logoGrad)" strokeWidth="4.5" strokeDasharray="18 14" strokeLinecap="round" opacity="0.8" />
 
       {/* Inner target circle */}
-      <circle cx="50" cy="50" r="30" fill="none" stroke="#30363d" strokeWidth="4" />
+      <circle cx="50" cy="50" r="30" fill="none" stroke="var(--border)" strokeWidth="4" />
       <circle cx="50" cy="50" r="30" fill="none" stroke="url(#logoGrad)" strokeWidth="4" strokeDasharray="70 90" strokeLinecap="round" />
 
       {/* Stylized T-Checkmark combo */}
       <g transform="translate(0, 1)">
-        <rect x="24" y="28" width="52" height="6" rx="3" fill="#e6edf3" filter="url(#logoBlueGlow)" />
-        <path d="M50 28 V 56" stroke="#e6edf3" strokeWidth="6.5" strokeLinecap="round" />
-        <path d="M38 52 L 49.5 63.5 L 74 31" fill="none" stroke="#3fb950" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" filter="url(#logoGlow)" />
+        <rect x="24" y="28" width="52" height="6" rx="3" fill="var(--foreground)" filter="url(#logoBlueGlow)" />
+        <path d="M50 28 V 56" stroke="var(--foreground)" strokeWidth="6.5" strokeLinecap="round" />
+        <path d="M38 52 L 49.5 63.5 L 74 31" fill="none" stroke="var(--success)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" filter="url(#logoGlow)" />
       </g>
     </svg>
   );
@@ -208,7 +208,7 @@ function Logo({ className = "w-8 h-8" }: { className?: string }) {
 
 // ─── Radial Gauge ─────────────────────────────────────────────────────────────
 
-function RadialGauge({ score, color }: { score: number; color: string }) {
+function RadialGauge({ score, color, glow }: { score: number; color: string; glow: string }) {
   const [animated, setAnimated] = useState(false);
   const [displayNum, setDisplayNum] = useState(0);
   const circumference = 2 * Math.PI * 40;
@@ -248,7 +248,7 @@ function RadialGauge({ score, color }: { score: number; color: string }) {
           cy="50"
           r="40"
           fill="none"
-          stroke="#21262d"
+          stroke="var(--secondary)"
           strokeWidth="7"
         />
         {/* Progress */}
@@ -264,7 +264,7 @@ function RadialGauge({ score, color }: { score: number; color: string }) {
           strokeDashoffset={dashOffset}
           style={{
             transition: "stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            filter: `drop-shadow(0 0 6px ${color}60)`,
+            filter: `drop-shadow(0 0 6px ${glow})`,
           }}
         />
       </svg>
@@ -298,6 +298,7 @@ function CategoryBar({
 }) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const color = scoreToBarColor(score);
+  const glow = scoreToGlowColor(score);
 
   return (
     <div
@@ -313,7 +314,7 @@ function CategoryBar({
             style={{
               width: `${(score / 10) * 100}%`,
               backgroundColor: color,
-              boxShadow: `0 0 8px ${color}60`,
+              boxShadow: `0 0 8px ${glow}`,
             }}
           />
         </div>
@@ -326,14 +327,14 @@ function CategoryBar({
       </div>
 
       {tooltipVisible && (
-        <div className="absolute left-48 top-0 z-50 w-80 bg-[#1c2129] border border-border rounded-lg p-3 shadow-xl pointer-events-none">
+        <div className="absolute left-48 top-0 z-50 w-80 bg-tooltip-background border border-border rounded-lg p-3 shadow-xl pointer-events-none">
           <div className="mb-2">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">Evidence</span>
             <p className="text-xs text-foreground/80 mt-1 font-mono leading-relaxed">{evidence}</p>
           </div>
           <div>
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">Suggested fix</span>
-            <p className="text-xs text-[#4493f8] mt-1 leading-relaxed">{fix}</p>
+            <p className="text-xs text-primary mt-1 leading-relaxed">{fix}</p>
           </div>
         </div>
       )}
@@ -558,9 +559,9 @@ export default function App() {
         theme="dark"
         toastOptions={{
           style: {
-            background: "#161b22",
-            border: "1px solid #30363d",
-            color: "#e6edf3",
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+            color: "var(--foreground)",
             fontFamily: "'Inter', sans-serif",
             fontSize: "13px",
           },
@@ -862,7 +863,7 @@ export default function App() {
                 {/* Hero score */}
                 <div className="bg-card border border-border rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start hover:border-[#4493f8]/20 transition-all duration-300">
                   <div className="shrink-0">
-                    <RadialGauge score={score} color={gradeBand.hex} />
+                    <RadialGauge score={score} color={gradeBand.hex} glow={gradeBand.glow} />
                   </div>
                   <div className="flex-1 flex flex-col justify-center text-center sm:text-left">
                     <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">

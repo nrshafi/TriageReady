@@ -45,8 +45,10 @@ All interface panels, forms, and custom layout controls (like `RadialGauge`, `Ca
 ## Layout Patterns
 
 - **Sticky Navigation**: Header bar fixed at the top of the viewport with a bottom border, containing logo branding and connection state elements.
-- **Centered Layout**: Centered workspace using `max-w-4xl mx-auto px-6` to ensure comfortable reading width on large desktop monitors.
-- **Grids**: Responsive two-column layouts for before-and-after ticket comparisons and supplementary status dashboards (Missing fields vs. Severity predictions).
+- **Spacious Dashboard Workspace**: Spacious desktop workspace using `max-w-7xl mx-auto px-6` to utilize whitespace effectively.
+- **Input Page Dashboard Grid**: A 2-column responsive layout (`grid grid-cols-1 lg:grid-cols-12`) placing the rubric guide/vertical quick samples on the left (`lg:col-span-4`) and the main report textarea on the right (`lg:col-span-8`).
+- **Results Page Dashboard Grid**: A 2-column layout (`grid grid-cols-1 lg:grid-cols-12`) placing the key metrics stack (Radial Gauge score, severity predictions, missing info) on the left (`lg:col-span-5`) and the rubric category breakdown cards on the right (`lg:col-span-7`).
+- **Before/After Comparison**: Placed full-width below the top results grid to maximize readability and comparisons.
 - **Tooltips**: Floating hover popovers showing verbatim evidence quotes and suggested recommendations positioned dynamically relative to the target item.
 
 ## Icons

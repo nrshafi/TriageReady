@@ -12,6 +12,7 @@ import {
   FlaskConical,
   FileText,
   RotateCcw,
+  CheckCircle2,
 } from "lucide-react";
 import { CRITERIA, SAMPLE_REPORTS, DEMO_RESPONSES, type GeminiResult } from "./constants";
 import { analyzeReport } from "./api";
@@ -568,7 +569,7 @@ export default function App() {
 
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Logo className="w-8 h-8 shrink-0" />
             <span className="font-semibold text-sm text-foreground tracking-tight">TriageReady</span>
@@ -608,7 +609,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 pb-16">
+      <main className="max-w-7xl mx-auto px-6 pb-16">
 
         {/* ── SETUP STATE ── */}
         {appState === "setup" && (
@@ -685,70 +686,129 @@ export default function App() {
 
         {/* ── INPUT STATE ── */}
         {(appState === "input" || appState === "loading") && (
-          <div className="pt-8 space-y-5">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Bug Report
-                </label>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-muted-foreground">Quick samples:</span>
+          <div className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Info & Sample Picker Card */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* App intro / Info Card */}
+              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                <div className="flex items-center gap-3">
+                  <Logo className="w-10 h-10 shrink-0" />
+                  <div>
+                    <h2 className="text-sm font-semibold text-foreground leading-tight">TriageReady Grader</h2>
+                    <p className="text-[11px] text-muted-foreground">QA Assistant</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Paste your raw, unstructured bug report or feedback. The system analyzes it against a 9-criterion rubric to grade its quality and generate a clean, structured, non-hallucinated rewrite.
+                </p>
+                <div className="border-t border-border/60 pt-3">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block mb-2">Evaluation Rubric</span>
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] text-foreground/80 font-mono">
+                    <div>• Title (10%)</div>
+                    <div>• Repro steps (25%)</div>
+                    <div>• Expected behavior (10%)</div>
+                    <div>• Actual behavior (10%)</div>
+                    <div>• Environment (15%)</div>
+                    <div>• Severity/Priority (10%)</div>
+                    <div>• Reproducibility (5%)</div>
+                    <div>• Evidence (5%)</div>
+                    <div>• Clarity/Scope (10%)</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sample Cards Selection */}
+              <div className="space-y-3">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block px-1">Select a Quick Sample</span>
+                <div className="flex flex-col gap-2.5">
                   {(["terrible", "mediocre", "excellent"] as const).map((key, idx) => {
-                    const labels = ["😱 Terrible", "😐 Mediocre", "✨ Excellent"];
+                    const titles = ["😱 Terrible Report", "😐 Mediocre Report", "✨ Excellent Report"];
+                    const descs = [
+                      "Extremely vague. No environment, steps, expected or actual results.",
+                      "Some useful information, but missing key environment specifications and evidence.",
+                      "Highly structured. Contains steps, environments, and precise descriptions."
+                    ];
+                    const active = activeSample === key;
                     return (
                       <button
                         key={key}
                         onClick={() => handleSamplePick(key)}
-                        className={`text-[11px] px-2.5 py-1 rounded border font-medium transition-colors ${
-                          activeSample === key
-                            ? "bg-[#4493f8]/15 border-[#4493f8]/40 text-[#4493f8]"
-                            : "bg-transparent border-border text-muted-foreground hover:border-[#4493f8]/30 hover:text-foreground"
-                        }`}
+                        disabled={appState === "loading"}
+                        className={`text-left p-3.5 rounded-xl border transition-all duration-300 ${
+                          active
+                            ? "bg-[#4493f8]/10 border-[#4493f8] shadow-[0_0_12px_rgba(68,147,248,0.15)]"
+                            : "bg-card border-border hover:border-[#4493f8]/40 hover:bg-[#161b22]/80"
+                        } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer group`}
                       >
-                        {labels[idx]}
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-xs font-semibold ${active ? "text-[#4493f8]" : "text-foreground group-hover:text-foreground"}`}>
+                            {titles[idx]}
+                          </span>
+                          <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border">
+                            {key === "terrible" ? "Score ~10" : key === "mediocre" ? "Score ~50" : "Score ~95"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          {descs[idx]}
+                        </p>
                       </button>
                     );
                   })}
                 </div>
               </div>
-
-              <textarea
-                value={reportText}
-                onChange={(e) => {
-                  setReportText(e.target.value);
-                  setActiveSample(null);
-                }}
-                placeholder="Paste your bug report…"
-                rows={14}
-                className="w-full bg-card border border-border rounded-xl px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/40 font-mono leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors"
-                spellCheck={false}
-                disabled={appState === "loading"}
-              />
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
-                {reportText.length > 0 && (
-                  <span>{reportText.length} chars</span>
-                )}
+            {/* Right Column: Text Area Input */}
+            <div className="lg:col-span-8 space-y-4">
+              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Raw Bug Content
+                  </label>
+                  {activeSample && (
+                    <span className="text-[11px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                      Sample loaded: {activeSample}
+                    </span>
+                  )}
+                </div>
+
+                <textarea
+                  value={reportText}
+                  onChange={(e) => {
+                    setReportText(e.target.value);
+                    setActiveSample(null);
+                  }}
+                  placeholder="Paste your raw bug report here, or click one of the quick samples on the left to populate..."
+                  className="w-full bg-secondary border border-border rounded-lg px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/40 font-mono leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors h-[380px]"
+                  spellCheck={false}
+                  disabled={appState === "loading"}
+                />
+
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
+                    {reportText.length > 0 && (
+                      <span>{reportText.length} characters</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={appState === "loading" || !reportText.trim()}
+                    className="flex items-center gap-2 bg-[#4493f8] hover:bg-[#3b82f6] disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
+                  >
+                    {appState === "loading" ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Analyzing report...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4" />
+                        Analyze Report
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={handleAnalyze}
-                disabled={appState === "loading"}
-                className="flex items-center gap-2 bg-[#4493f8] hover:bg-[#3b82f6] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm px-6 py-2.5 rounded-lg transition-colors"
-              >
-                {appState === "loading" ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Analyzing…
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4" />
-                    Analyze report
-                  </>
-                )}
-              </button>
             </div>
           </div>
         )}
@@ -762,7 +822,7 @@ export default function App() {
 
         {/* ── RESULTS STATE ── */}
         {appState === "results" && result && gradeBand && (
-          <div className="pt-6 space-y-4">
+          <div className="pt-6 space-y-6">
             {/* Collapsed input bar */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <button
@@ -795,124 +855,130 @@ export default function App() {
               </div>
             )}
 
-            {/* Hero score */}
-            <div className="bg-card border border-border rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-              <div className="shrink-0">
-                <RadialGauge score={score} color={gradeBand.hex} />
-              </div>
-              <div className="flex-1 flex flex-col justify-center text-center sm:text-left">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">
-                  Is this report triage-ready?
-                </p>
-                <div className="flex items-center gap-3 justify-center sm:justify-start mb-3">
-                  <span className="font-mono text-4xl font-semibold text-foreground">{score}</span>
-                  <span
-                    className={`text-sm font-medium px-3 py-1 rounded-full ${gradeBand.pillBg} ${gradeBand.pillText}`}
-                  >
-                    {gradeBand.label}
-                  </span>
+            {/* Top Grid: Left (Score, Severity, Missing Info) & Right (Rubric Details) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Column on Desktop */}
+              <div className="lg:col-span-5 space-y-6">
+                {/* Hero score */}
+                <div className="bg-card border border-border rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start hover:border-[#4493f8]/20 transition-all duration-300">
+                  <div className="shrink-0">
+                    <RadialGauge score={score} color={gradeBand.hex} />
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center text-center sm:text-left">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">
+                      Is this report triage-ready?
+                    </p>
+                    <div className="flex items-center gap-3 justify-center sm:justify-start mb-3">
+                      <span className="font-mono text-4xl font-semibold text-foreground">{score}</span>
+                      <span
+                        className={`text-xs font-medium px-3 py-1 rounded-full ${gradeBand.pillBg} ${gradeBand.pillText}`}
+                      >
+                        {gradeBand.label}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {result.summary_verdict}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-                  {result.summary_verdict}
-                </p>
-              </div>
-            </div>
 
-            {/* Category breakdown */}
-            <div className="bg-card border border-border rounded-xl p-6">
-              <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-4">
-                Category Breakdown
-              </h2>
-              <div className="space-y-0.5">
-                {CRITERIA.map((criterion) => {
-                  const cr = result.criteria.find((c) => c.id === criterion.id);
-                  return (
-                    <CategoryBar
-                      key={criterion.id}
-                      label={criterion.label}
-                      weight={criterion.weight}
-                      score={cr?.score ?? 0}
-                      evidence={cr?.evidence ?? "Not present"}
-                      fix={cr?.fix ?? "No suggestion available."}
-                    />
-                  );
-                })}
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-4 font-mono">
-                Hover a row to see evidence quote and suggested fix.
-              </p>
-            </div>
-
-            {/* Missing info + Severity row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Missing info */}
-              <div className="bg-card border border-border rounded-xl p-5">
-                <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3 flex items-center gap-2">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Missing Information
-                </h2>
-                {result.missing_fields.length === 0 ? (
-                  <p className="text-sm text-green-400 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4" /> All required fields present.
-                  </p>
-                ) : (
-                  <ul className="space-y-2">
-                    {result.missing_fields.map((field, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-sm">
-                        <span className="w-4 h-4 rounded border border-amber-500/40 bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                        </span>
-                        <span className="text-foreground/80">{field}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              {/* Severity prediction */}
-              <div className="bg-card border border-border rounded-xl p-5">
-                <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3">
-                  Severity Prediction
-                </h2>
-                <div className="flex items-center gap-2 mb-3">
-                  <span
-                    className={`text-sm font-mono font-semibold px-2.5 py-1 rounded border ${
-                      result.severity_prediction.severity === "Critical"
-                        ? "bg-red-500/15 border-red-500/30 text-red-400"
-                        : result.severity_prediction.severity === "High"
-                        ? "bg-orange-500/15 border-orange-500/30 text-orange-400"
-                        : result.severity_prediction.severity === "Medium"
-                        ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-400"
-                        : "bg-secondary border-border text-muted-foreground"
-                    }`}
-                  >
-                    {result.severity_prediction.severity}
-                  </span>
-                  <span className="text-sm font-mono font-semibold px-2.5 py-1 rounded border bg-[#4493f8]/10 border-[#4493f8]/30 text-[#4493f8]">
-                    {result.severity_prediction.priority}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {result.severity_prediction.reasoning}
-                </p>
-              </div>
-            </div>
-
-            {/* Before / After */}
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
-                {/* Before */}
-                <div className="p-5">
+                {/* Severity prediction */}
+                <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
                   <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3">
+                    Severity Prediction
+                  </h2>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span
+                      className={`text-xs font-mono font-semibold px-2.5 py-1 rounded border ${
+                        result.severity_prediction.severity === "Critical"
+                          ? "bg-red-500/15 border-red-500/30 text-red-400"
+                          : result.severity_prediction.severity === "High"
+                          ? "bg-orange-500/15 border-orange-500/30 text-orange-400"
+                          : result.severity_prediction.severity === "Medium"
+                          ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-400"
+                          : "bg-secondary border-border text-muted-foreground"
+                      }`}
+                    >
+                      {result.severity_prediction.severity}
+                    </span>
+                    <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded border bg-[#4493f8]/10 border-[#4493f8]/30 text-[#4493f8]">
+                      {result.severity_prediction.priority}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {result.severity_prediction.reasoning}
+                  </p>
+                </div>
+
+                {/* Missing info */}
+                <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
+                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3 flex items-center gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Missing Information
+                  </h2>
+                  {result.missing_fields.length === 0 ? (
+                    <p className="text-xs text-green-400 flex items-center gap-2 font-mono">
+                      <CheckCircle2 className="w-4 h-4" /> All required fields present.
+                    </p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {result.missing_fields.map((field, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-xs">
+                          <span className="w-3.5 h-3.5 rounded border border-amber-500/40 bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                          </span>
+                          <span className="text-foreground/80 font-mono">{field}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column on Desktop */}
+              <div className="lg:col-span-7">
+                {/* Category breakdown */}
+                <div className="bg-card border border-border rounded-xl p-6 hover:border-[#4493f8]/20 transition-all duration-300">
+                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-4">
+                    Category Breakdown
+                  </h2>
+                  <div className="space-y-0.5">
+                    {CRITERIA.map((criterion) => {
+                      const cr = result.criteria.find((c) => c.id === criterion.id);
+                      return (
+                        <CategoryBar
+                          key={criterion.id}
+                          label={criterion.label}
+                          weight={criterion.weight}
+                          score={cr?.score ?? 0}
+                          evidence={cr?.evidence ?? "Not present"}
+                          fix={cr?.fix ?? "No suggestion available."}
+                        />
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-5 font-mono border-t border-border/50 pt-3">
+                    Hover a row to inspect evidence quote and suggested fix.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Panel: Before / After Report Compare */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-[#4493f8]/10 transition-all duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
+                {/* Before */}
+                <div className="p-6">
+                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-4">
                     Original (as submitted)
                   </h2>
-                  <pre className="text-xs font-mono text-muted-foreground leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto">
+                  <pre className="text-xs font-mono text-muted-foreground leading-relaxed whitespace-pre-wrap max-h-[500px] overflow-y-auto pr-1">
                     {reportText}
                   </pre>
                 </div>
 
                 {/* After */}
-                <div className="p-5">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
                     <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
                       Rewritten (triage-ready)
                     </h2>
@@ -920,33 +986,33 @@ export default function App() {
                       [NEEDS INFO] = flags unknowns
                     </span>
                   </div>
-                  <div className="max-h-96 overflow-y-auto pr-1">
+                  <div className="max-h-[500px] overflow-y-auto pr-1">
                     {renderMarkdown(result.rewritten_report_markdown)}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Export row */}
-            <div className="flex items-center gap-3 flex-wrap">
+            {/* Export actions */}
+            <div className="flex items-center gap-3 flex-wrap pt-2">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">Export:</span>
               <button
                 onClick={handleCopyMd}
-                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copyingMd ? "Copied!" : "Copy Markdown"}
               </button>
               <button
                 onClick={handleCopyJira}
-                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copyingJira ? "Copied!" : "Copy Jira format"}
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download .md

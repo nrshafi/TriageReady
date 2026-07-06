@@ -697,7 +697,7 @@ export default function App() {
             <span className="font-semibold text-sm text-foreground tracking-tight">
               TriageReady
             </span>
-            <span className="hidden sm:block text-[11px] text-muted-foreground border-l border-border pl-3 ml-1">
+            <span className="hidden sm:block text-xs font-medium text-muted-foreground/95 border-l border-border pl-3 ml-1">
               From rant to triage-ready in one click.
             </span>
           </div>
@@ -833,17 +833,6 @@ export default function App() {
             <div className="lg:col-span-4 space-y-6">
               {/* App intro / Info Card */}
               <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-                <div className="flex items-center gap-3">
-                  <Logo className="w-10 h-10 shrink-0" />
-                  <div>
-                    <h2 className="text-sm font-semibold text-foreground leading-tight">
-                      TriageReady Grader
-                    </h2>
-                    <p className="text-xs text-muted-foreground">
-                      QA Assistant
-                    </p>
-                  </div>
-                </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   Paste your raw, unstructured bug report or feedback. The
                   system analyzes it against a 9-criterion rubric to grade its

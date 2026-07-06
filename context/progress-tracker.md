@@ -56,6 +56,11 @@
 - Updated `AGENTS.md` and `README.md` to document the Node.js v24+ requirement, list Biome in the technology stack, and detail the lint/format commands (`npm run check` etc.) for future reference.
 - Improved application typography and readability. Defined custom font-sans and font-mono variables in `@theme inline` inside `src/styles/theme.css` and added webkit/moz font smoothing (antialiasing) alongside `text-rendering: optimizeLegibility` to the `body` tag. Scaled up microscopic font sizes (e.g. 10px and 11px to 12px/14px) and improved color contrast of text elements across the entire dashboard interface.
 - Resolved visual wrapping and alignment issues in the Evaluation Rubric sidebar card. Converted the layout from monospace to standard sans-serif (`font-sans`), increased column spacing (`gap-x-4`), and applied `whitespace-nowrap` to prevent list items (e.g., "Expected behavior (10%)" and "Severity/Priority (10%)") from wrapping. Checked and formatted using Biome and compiled successfully.
+- Removed redundant logo header element (`Logo`, `TriageReady Grader`, `QA Assistant`) from the sidebar card in `src/app/App.tsx` as it is already present in the global sticky navigation header.
+- Increased the font size of the application slogan in the navigation header from `11px` to `12px` (`text-xs`) and set `font-medium` with increased contrast (`text-muted-foreground/95`) to eliminate microscopic text and prevent blurriness/lack of sharpness. Run lint check and compiled successfully.
+
+
+
 
 
 

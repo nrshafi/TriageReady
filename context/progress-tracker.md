@@ -60,6 +60,7 @@
 - Removed redundant logo header element (`Logo`, `TriageReady Grader`, `QA Assistant`) from the sidebar card in `src/app/App.tsx` as it is already present in the global sticky navigation header.
 - Increased the font size of the application slogan in the navigation header from `11px` to `12px` (`text-xs`) and set `font-medium` with increased contrast (`text-muted-foreground/95`) to eliminate microscopic text and prevent blurriness/lack of sharpness. Run lint check and compiled successfully.
 - Added API Key Check Feature. Implemented `checkApiKey` in `src/app/api.ts` to perform a lightweight validation query to Google Generative Language endpoints. Refactored `App.tsx` to handle key checks asynchronously on mount and save actions, disabled inputs during validation loading, exposed clear red error indicators for verification failures, and updated the header with dynamic status badges (checking, valid, invalid, unchecked/offline). Verified with Biome check and production build checks.
+- Added the Live Demo GitHub Pages URL to README.md.
 
 
 

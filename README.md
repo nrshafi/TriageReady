@@ -1,5 +1,7 @@
 # <img src="src/assets/logo.png" width="40" height="40" align="center" alt="TriageReady Logo" /> TriageReady
 
+> **Live Demo:** [https://nrshafi.github.io/TriageReady/](https://nrshafi.github.io/TriageReady/)
+
 TriageReady is a modern, client-side web application designed to help developers, QA engineers, and product managers streamline and standardize the bug triaging process. It takes raw, unstructured bug reports and analyzes them against a comprehensive 9-criterion QA rubric using the Google Gemini 3.1 Flash Lite API.
 
 ## Features

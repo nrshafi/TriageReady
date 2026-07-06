@@ -64,7 +64,7 @@ function renderMarkdown(text: string): ReactNode[] {
       nodes.push(
         <h2
           key={k++}
-          className="text-sm font-semibold text-foreground mt-5 mb-2 pb-1 border-b border-border/50 font-sans tracking-wide uppercase text-[11px] text-muted-foreground"
+          className="text-xs font-bold text-foreground mt-5 mb-2 pb-1 border-b border-border/50 font-sans tracking-wider uppercase text-muted-foreground/90"
         >
           {line.slice(3)}
         </h2>,
@@ -171,7 +171,7 @@ function renderInline(text: string): ReactNode[] {
       parts.push(
         <span
           key={match.index}
-          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono bg-amber-500/15 text-amber-400 border border-amber-500/30 cursor-help"
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-mono bg-amber-500/15 text-amber-400 border border-amber-500/30 cursor-help"
           title="TriageReady flags unknowns instead of inventing them."
         >
           {content}
@@ -193,7 +193,7 @@ function renderInline(text: string): ReactNode[] {
       parts.push(
         <code
           key={match.index}
-          className="px-1 py-0.5 rounded text-[11px] font-mono bg-background border border-border text-secondary-foreground"
+          className="px-1 py-0.5 rounded text-xs font-mono bg-background border border-border text-secondary-foreground"
         >
           {token.slice(1, -1)}
         </code>,
@@ -388,7 +388,7 @@ function RadialGauge({
         >
           {displayNum}
         </span>
-        <span className="text-xs text-muted-foreground font-mono mt-0.5">
+        <span className="text-xs font-semibold text-muted-foreground font-mono mt-0.5">
           /100
         </span>
       </div>
@@ -438,7 +438,7 @@ function CategoryBar({
         <span className="font-mono text-sm w-10 text-right" style={{ color }}>
           {score}/10
         </span>
-        <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border w-10 text-center shrink-0">
+        <span className="text-xs font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border w-10 text-center shrink-0">
           ×{weight}
         </span>
       </div>
@@ -446,18 +446,18 @@ function CategoryBar({
       {tooltipVisible && (
         <div className="absolute left-48 top-0 z-50 w-80 bg-tooltip-background border border-border rounded-lg p-3 shadow-xl pointer-events-none">
           <div className="mb-2">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+            <span className="text-xs uppercase font-semibold tracking-wider text-muted-foreground font-mono">
               Evidence
             </span>
-            <p className="text-xs text-foreground/80 mt-1 font-mono leading-relaxed">
+            <p className="text-sm text-foreground/90 mt-1 font-mono leading-relaxed">
               {evidence}
             </p>
           </div>
           <div>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+            <span className="text-xs uppercase font-semibold tracking-wider text-muted-foreground font-mono">
               Suggested fix
             </span>
-            <p className="text-xs text-primary mt-1 leading-relaxed">{fix}</p>
+            <p className="text-sm text-primary mt-1 leading-relaxed">{fix}</p>
           </div>
         </div>
       )}
@@ -703,7 +703,7 @@ export default function App() {
           </div>
           <div className="flex items-center gap-3">
             {appState !== "setup" && (
-              <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                 {demoMode ? (
                   <span className="flex items-center gap-1.5 text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded">
                     <FlaskConical className="w-3 h-3" /> demo mode
@@ -723,7 +723,7 @@ export default function App() {
                 )}
                 <button
                   onClick={handleForgetKey}
-                  className="text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded border border-transparent hover:border-border text-[11px]"
+                  className="text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded border border-transparent hover:border-border text-xs"
                 >
                   forget key
                 </button>
@@ -752,7 +752,7 @@ export default function App() {
 
               <div className="bg-card border border-border rounded-xl p-6 space-y-5">
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                     Gemini API Key
                   </label>
                   <input
@@ -814,7 +814,7 @@ export default function App() {
                   </button>
                 </div>
 
-                <p className="text-[11px] text-muted-foreground text-center leading-relaxed pt-1">
+                <p className="text-xs text-muted-foreground text-center leading-relaxed pt-1">
                   Your key stays in your browser and is sent only to Google's
                   API.{" "}
                   <span className="text-foreground/60">
@@ -839,22 +839,22 @@ export default function App() {
                     <h2 className="text-sm font-semibold text-foreground leading-tight">
                       TriageReady Grader
                     </h2>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       QA Assistant
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Paste your raw, unstructured bug report or feedback. The
                   system analyzes it against a 9-criterion rubric to grade its
                   quality and generate a clean, structured, non-hallucinated
                   rewrite.
                 </p>
                 <div className="border-t border-border/60 pt-3">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block mb-2">
+                  <span className="text-xs font-semibold uppercase font-mono tracking-wider text-muted-foreground block mb-2">
                     Evaluation Rubric
                   </span>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] text-foreground/80 font-mono">
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs text-foreground/80 font-mono">
                     <div>• Title (10%)</div>
                     <div>• Repro steps (25%)</div>
                     <div>• Expected behavior (10%)</div>
@@ -870,7 +870,7 @@ export default function App() {
 
               {/* Sample Cards Selection */}
               <div className="space-y-3">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground block px-1">
+                <span className="text-xs font-semibold uppercase font-mono tracking-wider text-muted-foreground block px-1">
                   Select a Quick Sample
                 </span>
                 <div className="flex flex-col gap-2.5">
@@ -900,11 +900,11 @@ export default function App() {
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span
-                              className={`text-xs font-semibold ${active ? "text-[#4493f8]" : "text-foreground group-hover:text-foreground"}`}
+                              className={`text-sm font-semibold ${active ? "text-[#4493f8]" : "text-foreground group-hover:text-foreground"}`}
                             >
                               {titles[idx]}
                             </span>
-                            <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border">
+                            <span className="text-xs font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border">
                               {key === "terrible"
                                 ? "Score ~10"
                                 : key === "mediocre"
@@ -912,7 +912,7 @@ export default function App() {
                                   : "Score ~95"}
                             </span>
                           </div>
-                          <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
                             {descs[idx]}
                           </p>
                         </button>
@@ -927,11 +927,11 @@ export default function App() {
             <div className="lg:col-span-8 space-y-4">
               <div className="bg-card border border-border rounded-xl p-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                     Raw Bug Content
                   </label>
                   {activeSample && (
-                    <span className="text-[11px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                    <span className="text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
                       Sample loaded: {activeSample}
                     </span>
                   )}
@@ -950,7 +950,7 @@ export default function App() {
                 />
 
                 <div className="flex items-center justify-between pt-1">
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
+                  <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                     {reportText.length > 0 && (
                       <span>{reportText.length} characters</span>
                     )}
@@ -996,10 +996,10 @@ export default function App() {
               >
                 <div className="flex items-center gap-2">
                   <FileText className="w-3.5 h-3.5" />
-                  <span className="text-[11px] uppercase tracking-wider font-medium">
+                  <span className="text-xs uppercase tracking-wider font-semibold">
                     Original report
                   </span>
-                  <span className="text-[11px] text-muted-foreground font-mono">
+                  <span className="text-xs text-muted-foreground font-mono">
                     {reportText.length} chars
                   </span>
                 </div>
@@ -1011,7 +1011,7 @@ export default function App() {
               </button>
               {!inputCollapsed && (
                 <div className="px-4 pb-4 border-t border-border">
-                  <pre className="text-xs text-muted-foreground font-mono leading-relaxed whitespace-pre-wrap pt-3 max-h-40 overflow-y-auto">
+                  <pre className="text-sm text-muted-foreground font-mono leading-relaxed whitespace-pre-wrap pt-3 max-h-40 overflow-y-auto">
                     {reportText}
                   </pre>
                 </div>
@@ -1043,7 +1043,7 @@ export default function App() {
                     />
                   </div>
                   <div className="flex-1 flex flex-col justify-center text-center sm:text-left">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">
+                    <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground/90 font-mono mb-2">
                       Is this report triage-ready?
                     </p>
                     <div className="flex items-center gap-3 justify-center sm:justify-start mb-3">
@@ -1056,7 +1056,7 @@ export default function App() {
                         {gradeBand.label}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
                       {result.summary_verdict}
                     </p>
                   </div>
@@ -1064,7 +1064,7 @@ export default function App() {
 
                 {/* Severity prediction */}
                 <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
-                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3">
+                  <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-3">
                     Severity Prediction
                   </h2>
                   <div className="flex items-center gap-2 mb-3">
@@ -1085,19 +1085,19 @@ export default function App() {
                       {result.severity_prediction.priority}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground/90 leading-relaxed">
                     {result.severity_prediction.reasoning}
                   </p>
                 </div>
 
                 {/* Missing info */}
                 <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
-                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-3 flex items-center gap-2">
+                  <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-3 flex items-center gap-2">
                     <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />{" "}
                     Missing Information
                   </h2>
                   {result.missing_fields.length === 0 ? (
-                    <p className="text-xs text-green-400 flex items-center gap-2 font-mono">
+                    <p className="text-sm text-green-400 flex items-center gap-2 font-mono">
                       <CheckCircle2 className="w-4 h-4" /> All required fields
                       present.
                     </p>
@@ -1106,12 +1106,12 @@ export default function App() {
                       {result.missing_fields.map((field, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2.5 text-xs"
+                          className="flex items-start gap-2.5 text-sm"
                         >
                           <span className="w-3.5 h-3.5 rounded border border-amber-500/40 bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                           </span>
-                          <span className="text-foreground/80 font-mono">
+                          <span className="text-foreground/90 font-mono">
                             {field}
                           </span>
                         </li>
@@ -1125,7 +1125,7 @@ export default function App() {
               <div className="lg:col-span-7">
                 {/* Category breakdown */}
                 <div className="bg-card border border-border rounded-xl p-6 hover:border-[#4493f8]/20 transition-all duration-300">
-                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-4">
+                  <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-4">
                     Category Breakdown
                   </h2>
                   <div className="space-y-0.5">
@@ -1145,7 +1145,7 @@ export default function App() {
                       );
                     })}
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-5 font-mono border-t border-border/50 pt-3">
+                  <p className="text-xs text-muted-foreground mt-5 font-mono border-t border-border/50 pt-3">
                     Hover a row to inspect evidence quote and suggested fix.
                   </p>
                 </div>
@@ -1157,10 +1157,10 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
                 {/* Before */}
                 <div className="p-6">
-                  <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono mb-4">
+                  <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-4">
                     Original (as submitted)
                   </h2>
-                  <pre className="text-xs font-mono text-muted-foreground leading-relaxed whitespace-pre-wrap max-h-[500px] overflow-y-auto pr-1">
+                  <pre className="text-sm font-mono text-muted-foreground leading-relaxed whitespace-pre-wrap max-h-[500px] overflow-y-auto pr-1">
                     {reportText}
                   </pre>
                 </div>
@@ -1168,10 +1168,10 @@ export default function App() {
                 {/* After */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+                    <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono">
                       Rewritten (triage-ready)
                     </h2>
-                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                    <span className="text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
                       [NEEDS INFO] = flags unknowns
                     </span>
                   </div>
@@ -1184,26 +1184,26 @@ export default function App() {
 
             {/* Export actions */}
             <div className="flex items-center gap-3 flex-wrap pt-2">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+              <span className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono">
                 Export:
               </span>
               <button
                 onClick={handleCopyMd}
-                className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copyingMd ? "Copied!" : "Copy Markdown"}
               </button>
               <button
                 onClick={handleCopyJira}
-                className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copyingJira ? "Copied!" : "Copy Jira format"}
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 text-xs text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-3.5 py-2.5 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download .md

@@ -54,6 +54,8 @@
 - Refactored styles and API responses to fully align with standard guidelines. Exchanged all inline/component hex colors for CSS variable tokens, updated SVGs/RadialGauges/Tooltips/Toaster configs, added `scoreToGlowColor` for glows, and introduced strict schema validation on the Gemini API parser boundary. Verified production bundle compilation successfully.
 - Integrated Biome as the project linter and formatter. Configured `biome.json` for formatter style (2 spaces, double quotes) and enabled recommended lint rules, and added scripts (`npm run lint`, `npm run format`, `npm run check`) to `package.json`.
 - Updated `AGENTS.md` and `README.md` to document the Node.js v24+ requirement, list Biome in the technology stack, and detail the lint/format commands (`npm run check` etc.) for future reference.
+- Improved application typography and readability. Defined custom font-sans and font-mono variables in `@theme inline` inside `src/styles/theme.css` and added webkit/moz font smoothing (antialiasing) alongside `text-rendering: optimizeLegibility` to the `body` tag. Scaled up microscopic font sizes (e.g. 10px and 11px to 12px/14px) and improved color contrast of text elements across the entire dashboard interface.
+
 
 
 

@@ -48,6 +48,8 @@
 - Updated the application's target Node.js version to v24 (latest LTS as of 2026) across GitHub Actions (`.github/workflows/deploy.yml`) and `package.json` (`engines` constraint).
 - Reduced package.json dependencies to only `lucide-react` and `sonner`, uninstalled 197 unused packages, deleted the unused `src/app/components` folder, and updated system context documentation references accordingly.
 - Optimized whitespace usage across Input and Results screens by introducing a responsive 2-column dashboard layout on desktop viewports. Restructured sample selections and rubric previews, resolved a missing icon import, and verified production bundle compilation.
+- Updated `context/code-standards.md` to align with requested categories (General, TypeScript, Styling, API Integration, Data/Storage, File Organization), customizing principles, rules, and conventions for the Vite/React client-side environment.
+
 
 
 

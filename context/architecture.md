@@ -9,7 +9,7 @@
 | UI Library| Radix UI primitives / shadcn| Base accessible UI components |
 | Icons     | Lucide React                | Stroke-based icon set |
 | Hosting   | Client-only deployment      | Pure frontend client, no server backend needed |
-| API Layer | Gemini 2.5 Flash API        | REST endpoint for parsing and rewriting reports |
+| API Layer | Gemini 3.1 Flash Lite API   | REST endpoint for parsing and rewriting reports |
 
 ## System Boundaries
 

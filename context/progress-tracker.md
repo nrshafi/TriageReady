@@ -39,4 +39,6 @@
 ## Session Notes
 
 - Completed baseline repository mapping. All `.md` context specification files are updated to represent the active repository state.
+- Updated Gemini model from `Gemini 2.5 Flash` to `Gemini 3.1 Flash Lite` across the API implementation, project documentation, and README.md.
+
 

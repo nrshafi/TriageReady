@@ -15,7 +15,7 @@ TriageReady is a web application designed for QA engineers, product managers, an
 
 1. **Authentication / Access**: The user connects their Gemini API key (persisted in browser localStorage) or elects to try the application in Demo Mode.
 2. **Input**: The user inputs a raw bug report in the text area, optionally pre-populating it with one of three quick samples ("Terrible", "Mediocre", or "Excellent").
-3. **Analysis**: The user triggers "Analyze report", sending the report to the Gemini 2.5 Flash API with a dedicated system instruction and JSON output schema (or simulating via pre-defined responses in Demo Mode).
+3. **Analysis**: The user triggers "Analyze report", sending the report to the Gemini 3.1 Flash Lite API with a dedicated system instruction and JSON output schema (or simulating via pre-defined responses in Demo Mode).
 4. **Review Dashboard**: The user views the overall grade (e.g., Triage-ready, Minor gaps, Needs work, Rewrite required), radial gauge score, detailed category breakdown tooltips, missing fields warnings, and predicted severity/priority.
 5. **Comparison & Export**: The user reviews the side-by-side comparison of the original text and the rewritten structured markdown, then copies the Markdown or Jira format to the clipboard, or downloads a `.md` file.
 
@@ -37,7 +37,7 @@ TriageReady is a web application designed for QA engineers, product managers, an
 
 ### In Scope
 - Client-side React web application with Vite and Tailwind CSS.
-- Integrates directly with the Google Gemini 2.5 Flash API.
+- Integrates directly with the Google Gemini 3.1 Flash Lite API.
 - Offline Demo Mode utilizing pre-recorded responses for sample inputs.
 - Locally managed user settings and API key storage via localStorage.
 

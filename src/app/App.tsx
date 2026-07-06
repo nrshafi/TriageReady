@@ -854,16 +854,26 @@ export default function App() {
                   <span className="text-xs font-semibold uppercase font-mono tracking-wider text-muted-foreground block mb-2">
                     Evaluation Rubric
                   </span>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs text-foreground/80 font-mono">
-                    <div>• Title (10%)</div>
-                    <div>• Repro steps (25%)</div>
-                    <div>• Expected behavior (10%)</div>
-                    <div>• Actual behavior (10%)</div>
-                    <div>• Environment (15%)</div>
-                    <div>• Severity/Priority (10%)</div>
-                    <div>• Reproducibility (5%)</div>
-                    <div>• Evidence (5%)</div>
-                    <div>• Clarity/Scope (10%)</div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-foreground/80 font-sans">
+                    <div className="whitespace-nowrap">• Title (10%)</div>
+                    <div className="whitespace-nowrap">• Repro steps (25%)</div>
+                    <div className="whitespace-nowrap">
+                      • Expected behavior (10%)
+                    </div>
+                    <div className="whitespace-nowrap">
+                      • Actual behavior (10%)
+                    </div>
+                    <div className="whitespace-nowrap">• Environment (15%)</div>
+                    <div className="whitespace-nowrap">
+                      • Severity/Priority (10%)
+                    </div>
+                    <div className="whitespace-nowrap">
+                      • Reproducibility (5%)
+                    </div>
+                    <div className="whitespace-nowrap">• Evidence (5%)</div>
+                    <div className="whitespace-nowrap">
+                      • Clarity/Scope (10%)
+                    </div>
                   </div>
                 </div>
               </div>

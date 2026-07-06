@@ -55,6 +55,7 @@
 - Integrated Biome as the project linter and formatter. Configured `biome.json` for formatter style (2 spaces, double quotes) and enabled recommended lint rules, and added scripts (`npm run lint`, `npm run format`, `npm run check`) to `package.json`.
 - Updated `AGENTS.md` and `README.md` to document the Node.js v24+ requirement, list Biome in the technology stack, and detail the lint/format commands (`npm run check` etc.) for future reference.
 - Improved application typography and readability. Defined custom font-sans and font-mono variables in `@theme inline` inside `src/styles/theme.css` and added webkit/moz font smoothing (antialiasing) alongside `text-rendering: optimizeLegibility` to the `body` tag. Scaled up microscopic font sizes (e.g. 10px and 11px to 12px/14px) and improved color contrast of text elements across the entire dashboard interface.
+- Resolved visual wrapping and alignment issues in the Evaluation Rubric sidebar card. Converted the layout from monospace to standard sans-serif (`font-sans`), increased column spacing (`gap-x-4`), and applied `whitespace-nowrap` to prevent list items (e.g., "Expected behavior (10%)" and "Severity/Priority (10%)") from wrapping. Checked and formatted using Biome and compiled successfully.
 
 
 

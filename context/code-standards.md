@@ -5,12 +5,13 @@
 - **Principle**: Keep modules small, isolated, and single-purpose. Ensure scoring calculations, API interactions, and UI components remain distinct.
 - **Principle**: Fix root causes; do not layer workarounds over structural code defects.
 - **Principle**: Do not mix unrelated concerns in one component. Keep UI layout, error handling, and file export helpers decoupled.
-- **Principle**: Use Biome as the project linter and formatter. All source files must pass `npm run check` cleanly.
+- **Principle**: Use Biome as the project linter and formatter. All source files must pass `bun run check` cleanly.
+- **Principle**: Bun is the project package manager (`bun.lock` is committed). Do not introduce npm, pnpm, or yarn lockfiles.
 
 
 ## TypeScript
 
-- **Rule**: Strict mode is required throughout the project. Check types exhaustively during compile/build.
+- **Rule**: Strict mode is required throughout the project and is enforced by `tsconfig.app.json` / `tsconfig.node.json`. `bun run typecheck` (`tsc -b`) must pass; the production build runs it automatically.
 - **Rule**: Avoid `any` — use explicit interfaces (`GeminiResult`, `CriterionResult`, `GradeBand`) or narrowly scoped types for all state and helper functions.
 - **Rule**: Validate unknown external input (such as raw Gemini API responses) at system boundaries before trusting it in components.
 - **Framework**: Vite + React + TS.
@@ -35,9 +36,14 @@
 - **Rule**: Large generated content (such as analysis outputs and markdown exports) belongs in transient component state or downloaded locally by the user.
 - **Rule**: Do not store heavy report payloads or high-volume files directly in `localStorage` to avoid quota failures.
 
+## Testing
+
+- **Rule**: Pure logic modules (`scoring.ts`, `export.ts`, response validation in `api.ts`) must be covered by Vitest unit tests colocated as `*.test.ts`. Run with `bun run test`.
+- **Rule**: Bug fixes to pure functions must land with a regression test reproducing the original failure.
+
 ## File Organization
 
-- `src/app/` — Houses primary application source code: UI components (`App.tsx`), model integration client (`api.ts`), weighted rating engine (`scoring.ts`), and static content assets (`constants.ts`).
+- `src/app/` — Houses primary application source code: UI components (`App.tsx`), render error fallback (`ErrorBoundary.tsx`), model integration client (`api.ts`), weighted rating engine (`scoring.ts`), export/clipboard helpers (`export.ts`), static content assets (`constants.ts`), and colocated Vitest suites (`*.test.ts`).
 - `src/styles/` — Core layout configuration establishing CSS variable mappings, tailwind utility rules, and font definitions.
 - `src/assets/` — Static icon elements, SVG logos, and favicon representations.
 - `context/` — Project specification files outlining application goals, UI parameters, architecture decisions, and workflow tracking.

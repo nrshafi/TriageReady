@@ -61,13 +61,4 @@
 - Increased the font size of the application slogan in the navigation header from `11px` to `12px` (`text-xs`) and set `font-medium` with increased contrast (`text-muted-foreground/95`) to eliminate microscopic text and prevent blurriness/lack of sharpness. Run lint check and compiled successfully.
 - Added API Key Check Feature. Implemented `checkApiKey` in `src/app/api.ts` to perform a lightweight validation query to Google Generative Language endpoints. Refactored `App.tsx` to handle key checks asynchronously on mount and save actions, disabled inputs during validation loading, exposed clear red error indicators for verification failures, and updated the header with dynamic status badges (checking, valid, invalid, unchecked/offline). Verified with Biome check and production build checks.
 - Added the Live Demo GitHub Pages URL to README.md.
-
-
-
-
-
-
-
-
-
-
+- Hardening pass from external code review: fixed `toJiraFormat` fenced-code-block corruption by extracting code blocks before inline transforms (moved to new `src/app/export.ts` with regression tests); demo mode now blocks analysis of non-sample text with a guiding toast instead of silently returning canned results; added 30s request timeouts, `x-goog-api-key` header auth, response-schema enums/score ranges, and full 9-criterion completeness validation in `api.ts`; key verification now uses the free `GET /models` endpoint. Added strict TypeScript project configs (`tsc -b`), moved react/react-dom to `dependencies`, standardized on Bun (removed pnpm artifacts and `package-lock.json`), introduced Vitest suites for scoring/export/validation, added a CI quality gate (`ci.yml`) and gated Pages deploys on checks. Re-enabled Biome a11y rules and fixed violations (native checkbox, keyboard/touch-accessible category tooltips, button types, label associations, SVG titles/ARIA). Added `ErrorBoundary` + `StrictMode`, replaced hardcoded hex classes with theme tokens (new `--primary-hover`, `--primary-glow`), cleaned Figma Make leftovers (`figmaAssetResolver`, `default_shadcn_theme.css`, empty `globals.css`), removed `noindex` from `index.html`, swapped the 518KB README logo for the repo SVG, and added the MIT LICENSE.

@@ -24,7 +24,7 @@ TriageReady is a modern, client-side web application designed to help developers
 - **AI Engine**: Gemini 3.1 Flash Lite API (`gemini-3.1-flash-lite`)
 - **Linter/Formatter**: Biome (`@biomejs/biome`)
 - **Testing**: Vitest
-- **Package Manager**: Bun
+- **Package Manager**: npm
 - **Data Flow**: Pure client-side storage (localStorage) for API keys; zero remote data storage to protect key credentials. Requests authenticate via the `x-goog-api-key` header and go directly to Google's API.
 
 ## Getting Started
@@ -32,7 +32,7 @@ TriageReady is a modern, client-side web application designed to help developers
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) v24 or higher
-- [Bun](https://bun.sh/) v1.2 or higher (used as the package manager)
+- npm v10 or higher (bundled with Node.js)
 
 You'll also want a **free Gemini API key** from [Google AI Studio](https://aistudio.google.com/apikey) — or just use demo mode, which needs no key at all.
 
@@ -43,13 +43,13 @@ You'll also want a **free Gemini API key** from [Google AI Studio](https://aistu
    ```bash
    git clone https://github.com/nrshafi/TriageReady.git
    cd TriageReady
-   bun install
+   npm install
    ```
 
 2. Start the local development server:
 
    ```bash
-   bun run dev
+   npm run dev
    ```
 
 3. Open your browser and navigate to the displayed URL (typically `http://localhost:5173`).
@@ -58,22 +58,22 @@ You'll also want a **free Gemini API key** from [Google AI Studio](https://aistu
 
 | Command             | Description                                             |
 | ------------------- | ------------------------------------------------------- |
-| `bun run dev`       | Start the local development server                      |
-| `bun run build`     | Typecheck and build the production bundle               |
-| `bun run preview`   | Preview the production build locally                    |
-| `bun run test`      | Run the Vitest unit test suite                          |
-| `bun run typecheck` | Typecheck the project (`tsc -b`, strict mode)           |
-| `bun run lint`      | Check lint issues with Biome                            |
-| `bun run format`    | Auto-format all files with Biome                        |
-| `bun run check`     | Run all Biome checks and auto-apply safe fixes          |
-| `bun run check:ci`  | Biome CI mode — lint + format check without writing     |
+| `npm run dev`       | Start the local development server                      |
+| `npm run build`     | Typecheck and build the production bundle               |
+| `npm run preview`   | Preview the production build locally                    |
+| `npm run test`      | Run the Vitest unit test suite                          |
+| `npm run typecheck` | Typecheck the project (`tsc -b`, strict mode)           |
+| `npm run lint`      | Check lint issues with Biome                            |
+| `npm run format`    | Auto-format all files with Biome                        |
+| `npm run check`     | Run all Biome checks and auto-apply safe fixes          |
+| `npm run check:ci`  | Biome CI mode — lint + format check without writing     |
 
 ### Testing
 
 Unit tests cover the weighted scoring engine, the Markdown → Jira converter (including a regression test for fenced code blocks), and the Gemini response validator:
 
 ```bash
-bun run test
+npm run test
 ```
 
 ## Deployment

@@ -27,7 +27,7 @@ If a set of edits cannot be verified immediately inside the dev preview, the sco
 ## Protected Files
 
 Do not modify the following unless explicitly instructed:
-- Global theme definitions inside `src/styles/fonts.css` and `src/styles/globals.css`.
+- Global theme definitions inside `src/styles/fonts.css`.
 
 
 ## Keeping Docs in Sync
@@ -40,6 +40,6 @@ Update the relevant context file whenever implementation changes:
 ## Before Moving to the Next Unit
 
 1. Run the local dev server and ensure all layout visuals adjust cleanly.
-2. Verify TypeScript compile checks pass successfully (`npm run build`).
+2. Verify the quality gate passes: `bun run check:ci && bun run typecheck && bun run test && bun run build`.
 3. Complete the current goals list in `progress-tracker.md` to reflect new achievements.
 

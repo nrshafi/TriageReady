@@ -21,6 +21,7 @@ import {
   type GeminiResult,
   SAMPLE_REPORTS,
 } from "./constants";
+import { copyText, toJiraFormat } from "./export";
 import {
   computeOverallScore,
   getGradeBand,
@@ -217,7 +218,9 @@ function Logo({ className = "w-8 h-8" }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 100 100"
       className={className}
+      role="img"
     >
+      <title>TriageReady logo</title>
       <defs>
         <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="var(--primary)" />
@@ -348,12 +351,15 @@ function RadialGauge({
     <div
       className="relative flex items-center justify-center"
       style={{ width: 160, height: 160 }}
+      role="img"
+      aria-label={`Overall score: ${score} out of 100`}
     >
       <svg
         viewBox="0 0 100 100"
         width={160}
         height={160}
         style={{ transform: "rotate(-90deg)" }}
+        aria-hidden="true"
       >
         {/* Track */}
         <circle
@@ -399,29 +405,45 @@ function RadialGauge({
 // ─── Category bar with tooltip ────────────────────────────────────────────────
 
 function CategoryBar({
+  id,
   label,
   weight,
   score,
   evidence,
   fix,
 }: {
+  id: string;
   label: string;
   weight: number;
   score: number;
   evidence: string;
   fix: string;
 }) {
-  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const color = scoreToBarColor(score);
   const glow = scoreToGlowColor(score);
+  const detailId = `criterion-detail-${id}`;
+  const open = hovered || focused || pinned;
 
   return (
-    <div
-      className="relative group"
-      onMouseEnter={() => setTooltipVisible(true)}
-      onMouseLeave={() => setTooltipVisible(false)}
-    >
-      <div className="flex items-center gap-3 py-2">
+    <div className="relative">
+      <button
+        type="button"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => setPinned((p) => !p)}
+        onFocus={(e) => setFocused(e.target.matches(":focus-visible"))}
+        onBlur={() => {
+          setFocused(false);
+          setPinned(false);
+        }}
+        aria-expanded={open}
+        aria-controls={detailId}
+        aria-label={`${label}: scored ${score} out of 10, weight ${weight} percent. Toggle evidence and suggested fix.`}
+        className="w-full flex items-center gap-3 py-2 text-left rounded cursor-pointer focus-visible:outline-2 focus-visible:outline-primary/60"
+      >
         <span className="text-sm text-muted-foreground w-44 shrink-0 font-sans">
           {label}
         </span>
@@ -441,10 +463,13 @@ function CategoryBar({
         <span className="text-xs font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border w-10 text-center shrink-0">
           ×{weight}
         </span>
-      </div>
+      </button>
 
-      {tooltipVisible && (
-        <div className="absolute left-48 top-0 z-50 w-80 bg-tooltip-background border border-border rounded-lg p-3 shadow-xl pointer-events-none">
+      {open && (
+        <div
+          id={detailId}
+          className="bg-tooltip-background border border-border rounded-lg p-3 mb-2 lg:mb-0 lg:absolute lg:left-48 lg:top-0 lg:z-50 lg:w-80 lg:shadow-xl lg:pointer-events-none"
+        >
           <div className="mb-2">
             <span className="text-xs uppercase font-semibold tracking-wider text-muted-foreground font-mono">
               Evidence
@@ -496,28 +521,6 @@ function SkeletonDashboard() {
   );
 }
 
-// ─── Clipboard helper with execCommand fallback ───────────────────────────────
-
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.cssText = "position:fixed;opacity:0;pointer-events:none";
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand("copy");
-      document.body.removeChild(ta);
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
-
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
 type AppState = "setup" | "input" | "loading" | "results";
@@ -560,6 +563,7 @@ export default function App() {
             !navigator.onLine ||
             msg.toLowerCase().includes("fetch") ||
             msg.toLowerCase().includes("network") ||
+            msg.toLowerCase().includes("timed out") ||
             msg.toLowerCase().includes("cors");
 
           if (isNetworkErr) {
@@ -627,13 +631,18 @@ export default function App() {
       toast.error("Paste a bug report to analyze.");
       return;
     }
+    if (demoMode && !activeSample) {
+      toast.error(
+        "Demo mode analyzes the three sample reports only — pick a sample, or connect your Gemini API key for live analysis.",
+      );
+      return;
+    }
     setAppState("loading");
     try {
       let res: GeminiResult;
-      if (demoMode) {
+      if (demoMode && activeSample) {
         await new Promise((r) => setTimeout(r, 1400));
-        const key = activeSample ?? "mediocre";
-        res = DEMO_RESPONSES[key] ?? DEMO_RESPONSES.mediocre;
+        res = DEMO_RESPONSES[activeSample];
       } else {
         res = await analyzeReport(apiKey, reportText);
       }
@@ -677,16 +686,6 @@ export default function App() {
     setValidationError(null);
     setAppState("setup");
   }, []);
-
-  const toJiraFormat = (md: string) =>
-    md
-      .replace(/^## (.+)$/gm, "h2. $1")
-      .replace(/^### (.+)$/gm, "h3. $1")
-      .replace(/\*\*([^*]+)\*\*/g, "*$1*")
-      .replace(/`([^`]+)`/g, "{{$1}}")
-      .replace(/```[\w]*\n([\s\S]*?)```/g, "{code}\n$1{code}")
-      .replace(/^\d+\.\s/gm, "# ")
-      .replace(/^[-*]\s/gm, "* ");
 
   const handleCopyMd = async () => {
     if (!result) return;
@@ -779,7 +778,8 @@ export default function App() {
                       </span>
                     )}
                     {keyStatus === "invalid" && (
-                      <span
+                      <button
+                        type="button"
                         className="flex items-center gap-1.5 text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-1 rounded cursor-pointer"
                         title={validationError || "API Key invalid"}
                         onClick={() => {
@@ -788,7 +788,7 @@ export default function App() {
                       >
                         <AlertTriangle className="w-3 h-3 animate-pulse" /> key
                         invalid
-                      </span>
+                      </button>
                     )}
                     {keyStatus === "unchecked" && (
                       <span
@@ -803,13 +803,15 @@ export default function App() {
                 )}
                 {appState === "results" && (
                   <button
+                    type="button"
                     onClick={handleReset}
-                    className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded border border-border hover:border-[#4493f8]/50"
+                    className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded border border-border hover:border-primary/50"
                   >
                     <RotateCcw className="w-3 h-3" /> new report
                   </button>
                 )}
                 <button
+                  type="button"
                   onClick={handleForgetKey}
                   className="text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded border border-transparent hover:border-border text-xs"
                 >
@@ -840,10 +842,14 @@ export default function App() {
 
               <div className="bg-card border border-border rounded-xl p-6 space-y-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <label
+                    htmlFor="gemini-api-key"
+                    className="text-sm font-semibold text-muted-foreground uppercase tracking-wider"
+                  >
                     Gemini API Key
                   </label>
                   <input
+                    id="gemini-api-key"
                     type="password"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
@@ -853,7 +859,7 @@ export default function App() {
                       handleSaveAndContinue()
                     }
                     placeholder="AIza..."
-                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     autoComplete="off"
                     spellCheck={false}
                     disabled={isCheckingKey}
@@ -863,32 +869,13 @@ export default function App() {
                 <label
                   className={`flex items-center gap-2.5 select-none ${isCheckingKey ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
-                  <div
-                    onClick={() =>
-                      !isCheckingKey && setRememberKey(!rememberKey)
-                    }
-                    className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer ${
-                      rememberKey
-                        ? "bg-[#4493f8] border-[#4493f8]"
-                        : "bg-transparent border-border"
-                    } ${isCheckingKey ? "opacity-50 cursor-not-allowed" : ""}`}
-                  >
-                    {rememberKey && (
-                      <svg
-                        className="w-2.5 h-2.5 text-white"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                      >
-                        <path
-                          d="M2 5l2.5 2.5L8 3"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </div>
+                  <input
+                    type="checkbox"
+                    checked={rememberKey}
+                    onChange={(e) => setRememberKey(e.target.checked)}
+                    disabled={isCheckingKey}
+                    className="size-4 accent-primary cursor-pointer disabled:cursor-not-allowed"
+                  />
                   <span className="text-sm text-muted-foreground">
                     Remember on this device
                   </span>
@@ -905,9 +892,10 @@ export default function App() {
 
                 <div className="pt-1 flex flex-col gap-2">
                   <button
+                    type="button"
                     onClick={handleSaveAndContinue}
                     disabled={isCheckingKey}
-                    className="w-full bg-[#4493f8] hover:bg-[#3b82f6] disabled:bg-[#4493f8]/60 disabled:cursor-not-allowed text-white font-medium text-sm py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full bg-primary hover:bg-primary-hover disabled:bg-primary/60 disabled:cursor-not-allowed text-white font-medium text-sm py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {isCheckingKey ? (
                       <>
@@ -919,6 +907,7 @@ export default function App() {
                     )}
                   </button>
                   <button
+                    type="button"
                     onClick={handleDemoMode}
                     disabled={isCheckingKey}
                     className="w-full bg-transparent hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground hover:text-foreground font-medium text-sm py-2.5 rounded-lg border border-border transition-colors flex items-center justify-center gap-2 cursor-pointer"
@@ -1001,27 +990,24 @@ export default function App() {
                       const active = activeSample === key;
                       return (
                         <button
+                          type="button"
                           key={key}
                           onClick={() => handleSamplePick(key)}
                           disabled={appState === "loading"}
                           className={`text-left p-3.5 rounded-xl border transition-all duration-300 ${
                             active
-                              ? "bg-[#4493f8]/10 border-[#4493f8] shadow-[0_0_12px_rgba(68,147,248,0.15)]"
-                              : "bg-card border-border hover:border-[#4493f8]/40 hover:bg-[#161b22]/80"
+                              ? "bg-primary/10 border-primary shadow-[0_0_12px_var(--primary-glow)]"
+                              : "bg-card border-border hover:border-primary/40 hover:bg-card/80"
                           } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer group`}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span
-                              className={`text-sm font-semibold ${active ? "text-[#4493f8]" : "text-foreground group-hover:text-foreground"}`}
+                              className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground group-hover:text-foreground"}`}
                             >
                               {titles[idx]}
                             </span>
                             <span className="text-xs font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded border border-border">
-                              {key === "terrible"
-                                ? "Score ~10"
-                                : key === "mediocre"
-                                  ? "Score ~50"
-                                  : "Score ~95"}
+                              Score ~{computeOverallScore(DEMO_RESPONSES[key])}
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -1039,7 +1025,10 @@ export default function App() {
             <div className="lg:col-span-8 space-y-4">
               <div className="bg-card border border-border rounded-xl p-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <label
+                    htmlFor="report-input"
+                    className="text-sm font-semibold text-muted-foreground uppercase tracking-wider"
+                  >
                     Raw Bug Content
                   </label>
                   {activeSample && (
@@ -1050,13 +1039,14 @@ export default function App() {
                 </div>
 
                 <textarea
+                  id="report-input"
                   value={reportText}
                   onChange={(e) => {
                     setReportText(e.target.value);
                     setActiveSample(null);
                   }}
                   placeholder="Paste your raw bug report here, or click one of the quick samples on the left to populate..."
-                  className="w-full bg-secondary border border-border rounded-lg px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/40 font-mono leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-[#4493f8]/50 focus:border-[#4493f8]/50 transition-colors h-[380px]"
+                  className="w-full bg-secondary border border-border rounded-lg px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/40 font-mono leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-colors h-[380px]"
                   spellCheck={false}
                   disabled={appState === "loading"}
                 />
@@ -1068,9 +1058,10 @@ export default function App() {
                     )}
                   </div>
                   <button
+                    type="button"
                     onClick={handleAnalyze}
                     disabled={appState === "loading" || !reportText.trim()}
-                    className="flex items-center gap-2 bg-[#4493f8] hover:bg-[#3b82f6] disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
+                    className="flex items-center gap-2 bg-primary hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
                   >
                     {appState === "loading" ? (
                       <>
@@ -1103,6 +1094,7 @@ export default function App() {
             {/* Collapsed input bar */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <button
+                type="button"
                 onClick={() => setInputCollapsed(!inputCollapsed)}
                 className="w-full flex items-center justify-between px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -1146,7 +1138,7 @@ export default function App() {
               {/* Left Column on Desktop */}
               <div className="lg:col-span-5 space-y-6">
                 {/* Hero score */}
-                <div className="bg-card border border-border rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start hover:border-[#4493f8]/20 transition-all duration-300">
+                <div className="bg-card border border-border rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start hover:border-primary/20 transition-all duration-300">
                   <div className="shrink-0">
                     <RadialGauge
                       score={score}
@@ -1175,7 +1167,7 @@ export default function App() {
                 </div>
 
                 {/* Severity prediction */}
-                <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
+                <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/20 transition-all duration-300">
                   <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-3">
                     Severity Prediction
                   </h2>
@@ -1193,7 +1185,7 @@ export default function App() {
                     >
                       {result.severity_prediction.severity}
                     </span>
-                    <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded border bg-[#4493f8]/10 border-[#4493f8]/30 text-[#4493f8]">
+                    <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded border bg-primary/10 border-primary/30 text-primary">
                       {result.severity_prediction.priority}
                     </span>
                   </div>
@@ -1203,7 +1195,7 @@ export default function App() {
                 </div>
 
                 {/* Missing info */}
-                <div className="bg-card border border-border rounded-xl p-5 hover:border-[#4493f8]/20 transition-all duration-300">
+                <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/20 transition-all duration-300">
                   <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-3 flex items-center gap-2">
                     <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />{" "}
                     Missing Information
@@ -1236,7 +1228,7 @@ export default function App() {
               {/* Right Column on Desktop */}
               <div className="lg:col-span-7">
                 {/* Category breakdown */}
-                <div className="bg-card border border-border rounded-xl p-6 hover:border-[#4493f8]/20 transition-all duration-300">
+                <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/20 transition-all duration-300">
                   <h2 className="text-xs uppercase font-semibold tracking-wider text-muted-foreground/90 font-mono mb-4">
                     Category Breakdown
                   </h2>
@@ -1248,6 +1240,7 @@ export default function App() {
                       return (
                         <CategoryBar
                           key={criterion.id}
+                          id={criterion.id}
                           label={criterion.label}
                           weight={criterion.weight}
                           score={cr?.score ?? 0}
@@ -1258,14 +1251,15 @@ export default function App() {
                     })}
                   </div>
                   <p className="text-xs text-muted-foreground mt-5 font-mono border-t border-border/50 pt-3">
-                    Hover a row to inspect evidence quote and suggested fix.
+                    Hover, tap, or focus a row to inspect its evidence quote and
+                    suggested fix.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Bottom Panel: Before / After Report Compare */}
-            <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-[#4493f8]/10 transition-all duration-300">
+            <div className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary/10 transition-all duration-300">
               <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
                 {/* Before */}
                 <div className="p-6">
@@ -1300,22 +1294,25 @@ export default function App() {
                 Export:
               </span>
               <button
+                type="button"
                 onClick={handleCopyMd}
-                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-primary/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copyingMd ? "Copied!" : "Copy Markdown"}
               </button>
               <button
+                type="button"
                 onClick={handleCopyJira}
-                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-primary/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copyingJira ? "Copied!" : "Copy Jira format"}
               </button>
               <button
+                type="button"
                 onClick={handleDownload}
-                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-[#4493f8]/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground bg-card border border-border hover:border-primary/40 px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download .md

@@ -48,6 +48,8 @@
   --destructive-glow: rgba(248, 81, 73, 0.375);
   --logo-cyan: #06b6d4;
   --tooltip-background: #1c2129;
+  --primary-hover: #3b82f6;
+  --primary-glow: rgba(68, 147, 248, 0.15);
 }
 
 .dark {
@@ -94,6 +96,8 @@
   --destructive-glow: rgba(248, 81, 73, 0.375);
   --logo-cyan: #06b6d4;
   --tooltip-background: #1c2129;
+  --primary-hover: #3b82f6;
+  --primary-glow: rgba(68, 147, 248, 0.15);
 }
 
 @theme inline {
@@ -150,6 +154,8 @@
   --color-destructive-glow: var(--destructive-glow);
   --color-logo-cyan: var(--logo-cyan);
   --color-tooltip-background: var(--tooltip-background);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-glow: var(--primary-glow);
 }
 
 @layer base {

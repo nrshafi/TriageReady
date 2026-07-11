@@ -26,11 +26,11 @@ relevant file before continuing.
 ## Coding Rules & Quality Checks
 
 - **Node.js**: The codebase targets **Node.js >= 24.0.0**. Ensure all features and syntax are compatible.
-- **Package Manager**: This project uses **Bun** (`bun.lock` is committed). Install with `bun install`; do not introduce npm, pnpm, or yarn lockfiles.
+- **Package Manager**: This project uses **npm** (`package-lock.json` is committed). Install with `npm install`; do not introduce bun, pnpm, or yarn lockfiles.
 - **Code Formatting & Linting**: This project uses **Biome** as its unified formatter and linter.
-- **TypeScript**: Strict mode is enforced via `tsc -b` (`bun run typecheck`). The build script runs it automatically.
+- **TypeScript**: Strict mode is enforced via `tsc -b` (`npm run typecheck`). The build script runs it automatically.
 - **Mandatory Pre-commit Check**: Before concluding any coding task, you must run:
   ```bash
-  bun run check && bun run typecheck && bun run test
+  npm run check && npm run typecheck && npm run test
   ```
   Ensure everything compiles and checks clean. Avoid introducing ESLint or Prettier settings.
